@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 
 import '../../../theme/app_colors.dart';
 import '../models/speech_bubble.dart';
+import '../models/text_sticker.dart';
 import 'bubble_overlay.dart';
 import 'bubble_text_editing_controller.dart';
 import 'selected_bubble_toolbar.dart';
+import 'selected_text_toolbar.dart';
+import 'text_sticker_overlay.dart';
 
 typedef BubbleTapCallback = void Function(String bubbleId);
 typedef BubbleScaleStartCallback =
@@ -22,6 +25,18 @@ typedef BubbleScaleUpdateCallback =
       ScaleUpdateDetails details,
       Size displaySize,
     );
+typedef TextScaleStartCallback =
+    void Function(
+      TextStickerData textItem,
+      ScaleStartDetails details,
+      Size displaySize,
+    );
+typedef TextScaleUpdateCallback =
+    void Function(
+      TextStickerData textItem,
+      ScaleUpdateDetails details,
+      Size displaySize,
+    );
 
 class EditorCanvas extends StatelessWidget {
   const EditorCanvas({
@@ -29,9 +44,12 @@ class EditorCanvas extends StatelessWidget {
     required this.imageBytes,
     required this.imageSize,
     required this.bubbles,
+    required this.textItems,
     required this.selectedBubbleId,
     required this.selectedBubble,
+    required this.selectedTextItem,
     required this.isEditingText,
+    required this.isEditingTextItem,
     required this.textController,
     required this.textFocusNode,
     required this.transformationController,
@@ -41,18 +59,28 @@ class EditorCanvas extends StatelessWidget {
     required this.onBubbleScaleStart,
     required this.onBubbleScaleUpdate,
     required this.onBubbleScaleEnd,
+    required this.onTextTap,
+    required this.onTextScaleStart,
+    required this.onTextScaleUpdate,
+    required this.onTextScaleEnd,
     required this.onChangeShape,
     required this.onFlipHorizontal,
     required this.onFlipVertical,
+    required this.onResetRotation,
     required this.onDeleteSelectedBubble,
+    required this.onResetTextRotation,
+    required this.onDeleteSelectedText,
   });
 
   final Uint8List imageBytes;
   final Size imageSize;
   final List<SpeechBubbleData> bubbles;
+  final List<TextStickerData> textItems;
   final String? selectedBubbleId;
   final SpeechBubbleData? selectedBubble;
+  final TextStickerData? selectedTextItem;
   final bool isEditingText;
+  final bool isEditingTextItem;
   final BubbleTextEditingController textController;
   final FocusNode textFocusNode;
   final TransformationController transformationController;
@@ -62,10 +90,17 @@ class EditorCanvas extends StatelessWidget {
   final BubbleScaleStartCallback onBubbleScaleStart;
   final BubbleScaleUpdateCallback onBubbleScaleUpdate;
   final VoidCallback onBubbleScaleEnd;
+  final BubbleTapCallback onTextTap;
+  final TextScaleStartCallback onTextScaleStart;
+  final TextScaleUpdateCallback onTextScaleUpdate;
+  final VoidCallback onTextScaleEnd;
   final VoidCallback onChangeShape;
   final VoidCallback onFlipHorizontal;
   final VoidCallback onFlipVertical;
+  final VoidCallback onResetRotation;
   final VoidCallback onDeleteSelectedBubble;
+  final VoidCallback onResetTextRotation;
+  final VoidCallback onDeleteSelectedText;
 
   @override
   Widget build(BuildContext context) {
@@ -166,6 +201,42 @@ class EditorCanvas extends StatelessWidget {
                                           ),
                                       onScaleEnd: (_) => onBubbleScaleEnd(),
                                     ),
+                                  for (final textItem in textItems)
+                                    TextStickerOverlay(
+                                      textItem: textItem,
+                                      displaySize: displaySize,
+                                      selected:
+                                          textItem.id == selectedTextItem?.id,
+                                      isEditingText:
+                                          isEditingTextItem &&
+                                          textItem.id == selectedTextItem?.id,
+                                      textController:
+                                          isEditingTextItem &&
+                                              textItem.id ==
+                                                  selectedTextItem?.id
+                                          ? textController
+                                          : null,
+                                      textFocusNode:
+                                          isEditingTextItem &&
+                                              textItem.id ==
+                                                  selectedTextItem?.id
+                                          ? textFocusNode
+                                          : null,
+                                      onTap: () => onTextTap(textItem.id),
+                                      onScaleStart: (details) =>
+                                          onTextScaleStart(
+                                            textItem,
+                                            details,
+                                            displaySize,
+                                          ),
+                                      onScaleUpdate: (details) =>
+                                          onTextScaleUpdate(
+                                            textItem,
+                                            details,
+                                            displaySize,
+                                          ),
+                                      onScaleEnd: (_) => onTextScaleEnd(),
+                                    ),
                                 ],
                               ),
                             ),
@@ -200,7 +271,33 @@ class EditorCanvas extends StatelessWidget {
                     onChangeShape: onChangeShape,
                     onFlipHorizontal: onFlipHorizontal,
                     onFlipVertical: onFlipVertical,
+                    onResetRotation: onResetRotation,
                     onDelete: onDeleteSelectedBubble,
+                  );
+                },
+              ),
+            if (selectedTextItem != null)
+              AnimatedBuilder(
+                animation: transformationController,
+                builder: (context, child) {
+                  final textTopAnchor = Offset(
+                    imageOffset.dx +
+                        selectedTextItem!.center.dx * displaySize.width,
+                    imageOffset.dy +
+                        (selectedTextItem!.center.dy -
+                                selectedTextItem!.heightFactor / 2) *
+                            displaySize.height,
+                  );
+                  final transformedAnchor = MatrixUtils.transformPoint(
+                    transformationController.value,
+                    textTopAnchor,
+                  );
+
+                  return SelectedTextToolbar(
+                    anchor: transformedAnchor,
+                    viewportSize: viewportSize,
+                    onResetRotation: onResetTextRotation,
+                    onDelete: onDeleteSelectedText,
                   );
                 },
               ),

@@ -8,14 +8,18 @@ class EditorToolbar extends StatelessWidget {
     required this.hasImage,
     required this.onPickImage,
     required this.onAddBubble,
+    required this.onAddText,
     required this.onCrop,
+    required this.onShare,
     required this.onSave,
   });
 
   final bool hasImage;
   final VoidCallback onPickImage;
   final VoidCallback onAddBubble;
+  final VoidCallback onAddText;
   final VoidCallback onCrop;
+  final VoidCallback onShare;
   final VoidCallback onSave;
 
   @override
@@ -27,30 +31,43 @@ class EditorToolbar extends StatelessWidget {
         color: AppColors.toolbar,
         borderRadius: BorderRadius.circular(22),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _ToolbarItem(
-            icon: Icons.photo_library_outlined,
-            label: 'Photo',
-            onTap: onPickImage,
-          ),
-          _ToolbarItem(
-            icon: Icons.chat_bubble_outline_rounded,
-            label: 'Bulle',
-            onTap: hasImage ? onAddBubble : null,
-          ),
-          _ToolbarItem(
-            icon: Icons.crop,
-            label: 'Crop',
-            onTap: hasImage ? onCrop : null,
-          ),
-          _ToolbarItem(
-            icon: Icons.save_alt_outlined,
-            label: 'Sauver',
-            onTap: hasImage ? onSave : null,
-          ),
-        ],
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _ToolbarItem(
+              icon: Icons.photo_library_outlined,
+              label: 'Photo',
+              onTap: onPickImage,
+            ),
+            _ToolbarItem(
+              icon: Icons.chat_bubble_outline_rounded,
+              label: 'Phylactère',
+              onTap: hasImage ? onAddBubble : null,
+            ),
+            _ToolbarItem(
+              icon: Icons.text_fields_rounded,
+              label: 'Texte',
+              onTap: hasImage ? onAddText : null,
+            ),
+            _ToolbarItem(
+              icon: Icons.crop,
+              label: 'Crop',
+              onTap: hasImage ? onCrop : null,
+            ),
+            _ToolbarItem(
+              icon: Icons.share_outlined,
+              label: 'Partager',
+              onTap: hasImage ? onShare : null,
+            ),
+            _ToolbarItem(
+              icon: Icons.save_alt_outlined,
+              label: 'Sauver',
+              onTap: hasImage ? onSave : null,
+            ),
+          ],
+        ),
       ),
     );
   }

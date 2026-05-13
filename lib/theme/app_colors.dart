@@ -23,4 +23,14 @@ class AppColors {
     Color(0xFF047857),
     Color(0xFF7C3AED),
   ];
+
+  static const textBackgroundPalette = <Color>[
+    Color(0x00000000),
+    Color(0xFFF8FAFC),
+    Color(0xFFFDE68A),
+    Color(0xFFFCA5A5),
+    Color(0xFF93C5FD),
+    Color(0xFF86EFAC),
+    Color(0xFFD8B4FE),
+  ];
 }

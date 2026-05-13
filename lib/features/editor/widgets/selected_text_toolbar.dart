@@ -2,29 +2,23 @@ import 'package:flutter/material.dart';
 
 import '../../../theme/app_colors.dart';
 
-class SelectedBubbleToolbar extends StatelessWidget {
-  const SelectedBubbleToolbar({
+class SelectedTextToolbar extends StatelessWidget {
+  const SelectedTextToolbar({
     super.key,
     required this.anchor,
     required this.viewportSize,
-    required this.onChangeShape,
-    required this.onFlipHorizontal,
-    required this.onFlipVertical,
     required this.onResetRotation,
     required this.onDelete,
   });
 
   final Offset anchor;
   final Size viewportSize;
-  final VoidCallback onChangeShape;
-  final VoidCallback onFlipHorizontal;
-  final VoidCallback onFlipVertical;
   final VoidCallback onResetRotation;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
-    const toolbarWidth = 220.0;
+    const toolbarWidth = 96.0;
     final toolbarLeft = (anchor.dx - toolbarWidth / 2).clamp(
       8.0,
       viewportSize.width - toolbarWidth - 8,
@@ -53,21 +47,6 @@ class SelectedBubbleToolbar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _ActionButton(
-              icon: Icons.change_circle_outlined,
-              tooltip: 'Changer de phylactère',
-              onTap: onChangeShape,
-            ),
-            _ActionButton(
-              icon: Icons.swap_horiz,
-              tooltip: 'Inverser horizontalement',
-              onTap: onFlipHorizontal,
-            ),
-            _ActionButton(
-              icon: Icons.swap_vert,
-              tooltip: 'Inverser verticalement',
-              onTap: onFlipVertical,
-            ),
-            _ActionButton(
               tooltip: 'Remettre a 0°',
               onTap: onResetRotation,
               child: const Text(
@@ -80,9 +59,13 @@ class SelectedBubbleToolbar extends StatelessWidget {
               ),
             ),
             _ActionButton(
-              icon: Icons.delete_outline,
               tooltip: 'Supprimer',
               onTap: onDelete,
+              child: const Icon(
+                Icons.delete_outline,
+                size: 18,
+                color: AppColors.bubbleOutline,
+              ),
             ),
           ],
         ),
@@ -93,35 +76,24 @@ class SelectedBubbleToolbar extends StatelessWidget {
 
 class _ActionButton extends StatelessWidget {
   const _ActionButton({
-    this.icon,
-    this.child,
-    this.tooltip,
+    required this.tooltip,
     required this.onTap,
-  }) : assert(icon != null || child != null);
+    required this.child,
+  });
 
-  final IconData? icon;
-  final Widget? child;
-  final String? tooltip;
+  final String tooltip;
   final VoidCallback onTap;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final button = InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: SizedBox(
-        width: 36,
-        height: 32,
-        child: Center(
-          child: child ?? Icon(icon, size: 18, color: AppColors.bubbleOutline),
-        ),
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(width: 36, height: 32, child: Center(child: child)),
       ),
     );
-
-    if (tooltip == null) {
-      return button;
-    }
-
-    return Tooltip(message: tooltip, child: button);
   }
 }

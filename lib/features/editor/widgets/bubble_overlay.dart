@@ -42,10 +42,8 @@ class BubbleOverlay extends StatelessWidget {
     final bubbleTextStyle = bubble.textStyleFor(bubbleSize);
 
     if (isEditingText && textController != null) {
-      textController!.styledSpanBuilder = (text) => bubble.buildStyledTextSpan(
-        bubbleSize,
-        overrideText: text,
-      );
+      textController!.styledSpanBuilder = (text) =>
+          bubble.buildStyledTextSpan(bubbleSize, overrideText: text);
     }
 
     return Positioned(
@@ -87,10 +85,7 @@ class BubbleOverlay extends StatelessWidget {
                       BubbleRenderer.shouldFlipVertically(bubble) ? -1 : 1,
                       1,
                     ),
-                    child: Image.asset(
-                      bubble.assetPath,
-                      fit: BoxFit.fill,
-                    ),
+                    child: Image.asset(bubble.assetPath, fit: BoxFit.fill),
                   ),
                 ),
               ),
@@ -132,7 +127,7 @@ class BubbleOverlay extends StatelessWidget {
                           height: centeredTextHeight,
                           child: TextField(
                             key: ValueKey(
-                              '${bubble.id}_${bubble.font.name}_${bubble.textColor.toARGB32()}_${bubble.fontScaleFactor}_${bubble.textAlign.name}_${bubble.styleRanges.length}',
+                              '${bubble.id}_${bubble.font.name}_${bubble.textColor.toARGB32()}_${bubble.fontScaleFactor}_${bubble.textAlign.name}_${bubble.isBold}_${bubble.isItalic}_${bubble.styleRanges.length}',
                             ),
                             controller: textController,
                             focusNode: textFocusNode,
@@ -140,7 +135,10 @@ class BubbleOverlay extends StatelessWidget {
                             maxLines: null,
                             minLines: null,
                             keyboardType: TextInputType.multiline,
-                            cursorColor: bubble.textColor,
+                            cursorColor:
+                                bubble.font == BubbleFontOption.outlined
+                                ? Colors.black
+                                : bubble.textColor,
                             textAlign: bubble.textAlign,
                             textAlignVertical: TextAlignVertical.center,
                             textCapitalization: TextCapitalization.sentences,
@@ -152,7 +150,9 @@ class BubbleOverlay extends StatelessWidget {
                             decoration: InputDecoration(
                               hintText: 'Écrire…',
                               hintStyle: bubbleTextStyle.copyWith(
-                                color: bubble.textColor.withAlpha(125),
+                                color: bubble.font == BubbleFontOption.outlined
+                                    ? Colors.black.withAlpha(140)
+                                    : bubble.textColor.withAlpha(125),
                               ),
                               border: InputBorder.none,
                               isCollapsed: true,
@@ -180,9 +180,7 @@ class BubbleOverlay extends StatelessWidget {
                               placeholderText: selected
                                   ? 'Touchez encore pour écrire'
                                   : '',
-                              placeholderColor: bubble.textColor.withAlpha(
-                                153,
-                              ),
+                              placeholderColor: bubble.textColor.withAlpha(153),
                             ),
                           ),
                         ),

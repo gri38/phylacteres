@@ -61,7 +61,8 @@ enum BubbleFontOption {
   sans('Sans'),
   serif('Serif'),
   mono('Mono'),
-  condensed('Condensée');
+  condensed('Condensee'),
+  outlined('Contour');
 
   const BubbleFontOption(this.label);
 
@@ -72,7 +73,46 @@ enum BubbleFontOption {
     BubbleFontOption.serif => 'serif',
     BubbleFontOption.mono => 'monospace',
     BubbleFontOption.condensed => 'sans-serif-condensed',
+    BubbleFontOption.outlined => 'sans-serif',
   };
+
+  TextStyle resolveTextStyle({
+    required double fontSize,
+    required Color color,
+    required bool bold,
+    required bool italic,
+    double height = 1.15,
+  }) {
+    final resolvedColor = this == BubbleFontOption.outlined
+        ? Colors.white
+        : color;
+    final fontWeight = bold
+        ? FontWeight.w700
+        : this == BubbleFontOption.outlined
+        ? FontWeight.w600
+        : FontWeight.w500;
+
+    return TextStyle(
+      fontFamily: familyName,
+      fontSize: fontSize,
+      color: resolvedColor,
+      height: height,
+      fontWeight: fontWeight,
+      fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+      shadows: this == BubbleFontOption.outlined
+          ? const [
+              Shadow(offset: Offset(-1.4, -1.4), color: Colors.black),
+              Shadow(offset: Offset(0, -1.6), color: Colors.black),
+              Shadow(offset: Offset(1.4, -1.4), color: Colors.black),
+              Shadow(offset: Offset(-1.6, 0), color: Colors.black),
+              Shadow(offset: Offset(1.6, 0), color: Colors.black),
+              Shadow(offset: Offset(-1.4, 1.4), color: Colors.black),
+              Shadow(offset: Offset(0, 1.6), color: Colors.black),
+              Shadow(offset: Offset(1.4, 1.4), color: Colors.black),
+            ]
+          : null,
+    );
+  }
 }
 
 class BubbleTemplate {
@@ -262,6 +302,8 @@ class BubbleTemplate {
       fillColor: Colors.white,
       textColor: AppColors.bubbleOutline,
       font: BubbleFontOption.sans,
+      isBold: false,
+      isItalic: false,
       fontScaleFactor: 0.22,
       textAlign: TextAlign.center,
       styleRanges: const [],
@@ -317,6 +359,8 @@ class SpeechBubbleData {
     required this.fillColor,
     required this.textColor,
     required this.font,
+    required this.isBold,
+    required this.isItalic,
     required this.fontScaleFactor,
     required this.textAlign,
     required this.styleRanges,
@@ -336,18 +380,19 @@ class SpeechBubbleData {
   final Color fillColor;
   final Color textColor;
   final BubbleFontOption font;
+  final bool isBold;
+  final bool isItalic;
   final double fontScaleFactor;
   final TextAlign textAlign;
   final List<BubbleTextStyleRange> styleRanges;
 
   TextStyle textStyleFor(Size size) {
     final fontSize = math.min(size.width, size.height) * fontScaleFactor;
-    return TextStyle(
-      fontFamily: font.familyName,
+    return font.resolveTextStyle(
       fontSize: fontSize,
       color: textColor,
-      height: 1.15,
-      fontWeight: FontWeight.w500,
+      bold: isBold,
+      italic: isItalic,
     );
   }
 
@@ -410,18 +455,26 @@ class SpeechBubbleData {
       }
 
       var segmentStyle = baseStyle;
+      var segmentFont = font;
+      var segmentColor = textColor;
       for (final range in ranges) {
         if (start >= range.start && end <= range.end) {
           if (range.font != null) {
-            segmentStyle = segmentStyle.copyWith(
-              fontFamily: range.font!.familyName,
-            );
+            segmentFont = range.font!;
           }
           if (range.textColor != null) {
-            segmentStyle = segmentStyle.copyWith(color: range.textColor);
+            segmentColor = range.textColor!;
           }
         }
       }
+
+      segmentStyle = segmentFont.resolveTextStyle(
+        fontSize: baseStyle.fontSize ?? 14,
+        color: segmentColor,
+        bold: isBold,
+        italic: isItalic,
+        height: baseStyle.height ?? 1.15,
+      );
 
       children.add(
         TextSpan(text: displayText.substring(start, end), style: segmentStyle),
@@ -479,6 +532,14 @@ class SpeechBubbleData {
     );
   }
 
+  SpeechBubbleData applyBoldStyle(bool nextBold) {
+    return copyWith(isBold: nextBold);
+  }
+
+  SpeechBubbleData applyItalicStyle(bool nextItalic) {
+    return copyWith(isItalic: nextItalic);
+  }
+
   List<BubbleTextStyleRange> _clearOverrides({
     bool clearFont = false,
     bool clearTextColor = false,
@@ -529,6 +590,8 @@ class SpeechBubbleData {
     Color? fillColor,
     Color? textColor,
     BubbleFontOption? font,
+    bool? isBold,
+    bool? isItalic,
     double? fontScaleFactor,
     TextAlign? textAlign,
     List<BubbleTextStyleRange>? styleRanges,
@@ -548,6 +611,8 @@ class SpeechBubbleData {
       fillColor: fillColor ?? this.fillColor,
       textColor: textColor ?? this.textColor,
       font: font ?? this.font,
+      isBold: isBold ?? this.isBold,
+      isItalic: isItalic ?? this.isItalic,
       fontScaleFactor: fontScaleFactor ?? this.fontScaleFactor,
       textAlign: textAlign ?? this.textAlign,
       styleRanges: styleRanges ?? this.styleRanges,
