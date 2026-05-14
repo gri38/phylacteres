@@ -10,10 +10,6 @@ class PhotoPersistenceService {
     'com.guillot.phylactere/media',
   );
   static const String _preferredOutputFolderName = 'Phylactères';
-  static const List<String> _legacyOutputFolderNames = [
-    'Phylactere',
-    'Phylacteres',
-  ];
 
   Future<String> saveBytes({
     required Uint8List bytes,
@@ -89,34 +85,14 @@ class PhotoPersistenceService {
   String outputFolderName() => _preferredOutputFolderName;
 
   Directory _resolveOutputDirectory(String sourceDirectory) {
-    final candidates = [
-      ..._legacyOutputFolderNames,
-      _preferredOutputFolderName,
-    ].map((name) => Directory(p.join(sourceDirectory, name))).toList();
-
-    Directory? bestExisting;
-    var bestScore = -1;
-    for (final candidate in candidates) {
-      if (!candidate.existsSync()) {
-        continue;
-      }
-      final score = _safeEntryCount(candidate);
-      if (score > bestScore) {
-        bestExisting = candidate;
-        bestScore = score;
-      }
+    final preferredDirectory = Directory(
+      p.join(sourceDirectory, _preferredOutputFolderName),
+    );
+    if (preferredDirectory.existsSync()) {
+      return preferredDirectory;
     }
 
-    return bestExisting ??
-        Directory(p.join(sourceDirectory, _preferredOutputFolderName));
-  }
-
-  int _safeEntryCount(Directory directory) {
-    try {
-      return directory.listSync().length;
-    } on FileSystemException {
-      return 0;
-    }
+    return preferredDirectory;
   }
 
   String _mimeTypeForExtension(String extension) => switch (extension) {

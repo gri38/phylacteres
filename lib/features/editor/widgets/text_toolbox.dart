@@ -62,13 +62,18 @@ class TextToolbox extends StatelessWidget {
             onSelected: onFontChanged,
             itemBuilder: (context) {
               return BubbleFontOption.values.map((candidate) {
+                final previewText = candidate == BubbleFontOption.tintin
+                    ? 'Tintin'
+                    : 'Aa';
                 return PopupMenuItem(
                   value: candidate,
                   child: Center(
                     child: Text(
-                      'Aa',
+                      previewText,
                       style: candidate.resolveTextStyle(
-                        fontSize: 22,
+                        fontSize: candidate == BubbleFontOption.tintin
+                            ? 17
+                            : 22,
                         color: AppColors.bubbleOutline,
                         bold: candidate == BubbleFontOption.outlined,
                         italic: false,

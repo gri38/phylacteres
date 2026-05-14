@@ -57,12 +57,67 @@ class BubbleBodyInsets {
   }
 }
 
+class BubbleStretchSpec {
+  const BubbleStretchSpec({
+    required this.sourceSize,
+    required this.centerSlice,
+    required this.contentInsets,
+    this.autoSizeToText = false,
+    this.maxWidthFactor = 0.78,
+    this.maxHeightFactor = 0.62,
+  });
+
+  final Size sourceSize;
+  final Rect centerSlice;
+  final EdgeInsets contentInsets;
+  final bool autoSizeToText;
+  final double maxWidthFactor;
+  final double maxHeightFactor;
+
+  double uniformScaleFor(Size targetSize) {
+    return math.min(
+      targetSize.width / sourceSize.width,
+      targetSize.height / sourceSize.height,
+    );
+  }
+
+  EdgeInsets resolveContentPadding(
+    Size targetSize, {
+    required bool basePointeOnLeft,
+    required bool basePointeOnTop,
+    required bool pointeOnLeft,
+    required bool pointeOnTop,
+  }) {
+    final uniformScale = uniformScaleFor(targetSize);
+
+    var resolvedLeft = contentInsets.left * uniformScale;
+    var resolvedTop = contentInsets.top * uniformScale;
+    var resolvedRight = contentInsets.right * uniformScale;
+    var resolvedBottom = contentInsets.bottom * uniformScale;
+
+    if (basePointeOnLeft != pointeOnLeft) {
+      (resolvedLeft, resolvedRight) = (resolvedRight, resolvedLeft);
+    }
+    if (basePointeOnTop != pointeOnTop) {
+      (resolvedTop, resolvedBottom) = (resolvedBottom, resolvedTop);
+    }
+
+    return EdgeInsets.fromLTRB(
+      resolvedLeft,
+      resolvedTop,
+      resolvedRight,
+      resolvedBottom,
+    );
+  }
+}
+
 enum BubbleFontOption {
   sans('Sans'),
   serif('Serif'),
   mono('Mono'),
   condensed('Condensee'),
-  outlined('Contour');
+  outlined('Contour'),
+  tintin('Tintin');
 
   const BubbleFontOption(this.label);
 
@@ -74,6 +129,7 @@ enum BubbleFontOption {
     BubbleFontOption.mono => 'monospace',
     BubbleFontOption.condensed => 'sans-serif-condensed',
     BubbleFontOption.outlined => 'sans-serif',
+    BubbleFontOption.tintin => 'TintinTalking',
   };
 
   TextStyle resolveTextStyle({
@@ -88,7 +144,7 @@ enum BubbleFontOption {
         : color;
     final fontWeight = bold
         ? FontWeight.w700
-        : this == BubbleFontOption.outlined
+        : this == BubbleFontOption.outlined || this == BubbleFontOption.tintin
         ? FontWeight.w600
         : FontWeight.w500;
 
@@ -110,6 +166,14 @@ enum BubbleFontOption {
               Shadow(offset: Offset(0, 1.6), color: Colors.black),
               Shadow(offset: Offset(1.4, 1.4), color: Colors.black),
             ]
+          : this == BubbleFontOption.tintin
+          ? const [
+              Shadow(
+                offset: Offset(0.6, 0.6),
+                blurRadius: 0.2,
+                color: Color(0x33000000),
+              ),
+            ]
           : null,
     );
   }
@@ -125,6 +189,10 @@ class BubbleTemplate {
     required this.basePointeOnLeft,
     required this.basePointeOnTop,
     required this.bodyInsets,
+    this.stretchSpec,
+    this.defaultFont,
+    this.initialWidthFactor = 0.34,
+    this.initialHeightFactor = 0.24,
   });
 
   final String id;
@@ -135,6 +203,10 @@ class BubbleTemplate {
   final bool basePointeOnLeft;
   final bool basePointeOnTop;
   final BubbleBodyInsets bodyInsets;
+  final BubbleStretchSpec? stretchSpec;
+  final BubbleFontOption? defaultFont;
+  final double initialWidthFactor;
+  final double initialHeightFactor;
 
   static const values = <BubbleTemplate>[
     BubbleTemplate(
@@ -272,6 +344,32 @@ class BubbleTemplate {
         bottom: 0.249,
       ),
     ),
+    BubbleTemplate(
+      id: 'tintin',
+      label: 'Tintin',
+      shape: BubbleShape.roundedRect,
+      tailStyle: TailStyle.direct,
+      assetPath: 'assets/tintin/tintin.png',
+      basePointeOnLeft: true,
+      basePointeOnTop: false,
+      bodyInsets: BubbleBodyInsets(
+        left: 0.055,
+        top: 0.065,
+        right: 0.05,
+        bottom: 0.57,
+      ),
+      stretchSpec: BubbleStretchSpec(
+        sourceSize: Size(379, 187),
+        centerSlice: Rect.fromLTWH(82, 18, 274, 66),
+        contentInsets: EdgeInsets.fromLTRB(19, 14, 18, 108),
+        autoSizeToText: true,
+        maxWidthFactor: 0.78,
+        maxHeightFactor: 0.64,
+      ),
+      defaultFont: BubbleFontOption.tintin,
+      initialWidthFactor: 0.38,
+      initialHeightFactor: 0.19,
+    ),
   ];
 
   static BubbleTemplate? fromAssetPath(String assetPath) {
@@ -290,8 +388,8 @@ class BubbleTemplate {
     return SpeechBubbleData(
       id: bubbleId,
       center: center,
-      widthFactor: 0.34,
-      heightFactor: 0.24,
+      widthFactor: initialWidthFactor,
+      heightFactor: initialHeightFactor,
       rotation: 0,
       shape: shape,
       tailStyle: tailStyle,
@@ -301,7 +399,7 @@ class BubbleTemplate {
       text: '',
       fillColor: Colors.white,
       textColor: AppColors.bubbleOutline,
-      font: BubbleFontOption.sans,
+      font: defaultFont ?? BubbleFontOption.sans,
       isBold: false,
       isItalic: false,
       fontScaleFactor: 0.22,
@@ -387,7 +485,16 @@ class SpeechBubbleData {
   final List<BubbleTextStyleRange> styleRanges;
 
   TextStyle textStyleFor(Size size) {
-    final fontSize = math.min(size.width, size.height) * fontScaleFactor;
+    final template = BubbleTemplate.fromAssetPath(assetPath);
+    final stretchSpec = template?.stretchSpec;
+    final fontReference = stretchSpec == null
+        ? math.min(size.width, size.height)
+        : math.min(
+                stretchSpec.sourceSize.width,
+                stretchSpec.sourceSize.height,
+              ) *
+              stretchSpec.uniformScaleFor(size);
+    final fontSize = fontReference * fontScaleFactor;
     return font.resolveTextStyle(
       fontSize: fontSize,
       color: textColor,

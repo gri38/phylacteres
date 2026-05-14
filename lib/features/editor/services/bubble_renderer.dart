@@ -16,6 +16,10 @@ class BubbleRenderer {
   static final ImageCodecService _codecService = const ImageCodecService();
   static final Map<String, ui.Image> _assetCache = <String, ui.Image>{};
 
+  static Future<ui.Image> loadAssetImage(String assetPath) {
+    return _loadAssetImage(assetPath);
+  }
+
   static Future<Uint8List> renderCompositedImage({
     required Uint8List baseImageBytes,
     required Size baseSize,
@@ -180,10 +184,21 @@ class BubbleRenderer {
   }
 
   static EdgeInsets contentPadding(SpeechBubbleData bubble, Size size) {
+    final template = BubbleTemplate.fromAssetPath(bubble.assetPath);
+    final stretchSpec = template?.stretchSpec;
+    if (template != null && stretchSpec != null) {
+      return stretchSpec.resolveContentPadding(
+        size,
+        basePointeOnLeft: template.basePointeOnLeft,
+        basePointeOnTop: template.basePointeOnTop,
+        pointeOnLeft: bubble.tailOnLeft,
+        pointeOnTop: bubble.tailOnTop,
+      );
+    }
+
     final jsonInsets = BubbleLayoutRegistry.instance.layoutForAsset(
       bubble.assetPath,
     );
-    final template = BubbleTemplate.fromAssetPath(bubble.assetPath);
     final sourceInsets = jsonInsets ?? template?.bodyInsets;
 
     if (sourceInsets != null && template != null) {
@@ -241,6 +256,18 @@ class BubbleRenderer {
     SpeechBubbleData bubble,
   ) async {
     final image = await _loadAssetImage(bubble.assetPath);
+    paintLoadedBubbleAsset(canvas, size, bubble, image);
+  }
+
+  static void paintLoadedBubbleAsset(
+    Canvas canvas,
+    Size size,
+    SpeechBubbleData bubble,
+    ui.Image image,
+  ) {
+    final stretchSpec = BubbleTemplate.fromAssetPath(
+      bubble.assetPath,
+    )?.stretchSpec;
     final paint = Paint()
       ..isAntiAlias = true
       ..filterQuality = FilterQuality.high;
@@ -252,13 +279,114 @@ class BubbleRenderer {
       shouldFlipVertically(bubble) ? -1 : 1,
     );
     canvas.translate(-size.width / 2, -size.height / 2);
-    canvas.drawImageRect(
-      image,
-      Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
-      Rect.fromLTWH(0, 0, size.width, size.height),
-      paint,
-    );
+    if (stretchSpec != null) {
+      _paintScaledStretchBubble(canvas, image, size, stretchSpec, paint);
+    } else {
+      canvas.drawImageRect(
+        image,
+        Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
+        Rect.fromLTWH(0, 0, size.width, size.height),
+        paint,
+      );
+    }
     canvas.restore();
+  }
+
+  static void _paintScaledStretchBubble(
+    Canvas canvas,
+    ui.Image image,
+    Size size,
+    BubbleStretchSpec stretchSpec,
+    Paint paint,
+  ) {
+    final imageWidth = image.width.toDouble();
+    final imageHeight = image.height.toDouble();
+    final sourceLeft = stretchSpec.centerSlice.left;
+    final sourceTop = stretchSpec.centerSlice.top;
+    final sourceRight = imageWidth - stretchSpec.centerSlice.right;
+    final sourceBottom = imageHeight - stretchSpec.centerSlice.bottom;
+    final scale = stretchSpec.uniformScaleFor(size);
+
+    final leftWidth = sourceLeft * scale;
+    final topHeight = sourceTop * scale;
+    final rightWidth = sourceRight * scale;
+    final bottomHeight = sourceBottom * scale;
+    final centerWidth = math.max(0.0, size.width - leftWidth - rightWidth);
+    final centerHeight = math.max(0.0, size.height - topHeight - bottomHeight);
+
+    void drawPatch(Rect src, Rect dst) {
+      if (src.width <= 0 ||
+          src.height <= 0 ||
+          dst.width <= 0 ||
+          dst.height <= 0) {
+        return;
+      }
+      canvas.drawImageRect(image, src, dst, paint);
+    }
+
+    final leftX = 0.0;
+    final centerX = leftWidth;
+    final rightX = size.width - rightWidth;
+    final topY = 0.0;
+    final middleY = topHeight;
+    final bottomY = size.height - bottomHeight;
+
+    drawPatch(
+      Rect.fromLTWH(0, 0, sourceLeft, sourceTop),
+      Rect.fromLTWH(leftX, topY, leftWidth, topHeight),
+    );
+    drawPatch(
+      Rect.fromLTWH(sourceLeft, 0, stretchSpec.centerSlice.width, sourceTop),
+      Rect.fromLTWH(centerX, topY, centerWidth, topHeight),
+    );
+    drawPatch(
+      Rect.fromLTWH(stretchSpec.centerSlice.right, 0, sourceRight, sourceTop),
+      Rect.fromLTWH(rightX, topY, rightWidth, topHeight),
+    );
+    drawPatch(
+      Rect.fromLTWH(0, sourceTop, sourceLeft, stretchSpec.centerSlice.height),
+      Rect.fromLTWH(leftX, middleY, leftWidth, centerHeight),
+    );
+    drawPatch(
+      stretchSpec.centerSlice,
+      Rect.fromLTWH(centerX, middleY, centerWidth, centerHeight),
+    );
+    drawPatch(
+      Rect.fromLTWH(
+        stretchSpec.centerSlice.right,
+        sourceTop,
+        sourceRight,
+        stretchSpec.centerSlice.height,
+      ),
+      Rect.fromLTWH(rightX, middleY, rightWidth, centerHeight),
+    );
+    drawPatch(
+      Rect.fromLTWH(
+        0,
+        stretchSpec.centerSlice.bottom,
+        sourceLeft,
+        sourceBottom,
+      ),
+      Rect.fromLTWH(leftX, bottomY, leftWidth, bottomHeight),
+    );
+    drawPatch(
+      Rect.fromLTWH(
+        sourceLeft,
+        stretchSpec.centerSlice.bottom,
+        stretchSpec.centerSlice.width,
+        sourceBottom,
+      ),
+      Rect.fromLTWH(centerX, bottomY, centerWidth, bottomHeight),
+    );
+    drawPatch(
+      Rect.fromLTWH(
+        stretchSpec.centerSlice.right,
+        stretchSpec.centerSlice.bottom,
+        sourceRight,
+        sourceBottom,
+      ),
+      Rect.fromLTWH(rightX, bottomY, rightWidth, bottomHeight),
+    );
   }
 
   static Future<ui.Image> _loadAssetImage(String assetPath) async {

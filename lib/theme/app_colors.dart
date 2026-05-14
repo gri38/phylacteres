@@ -5,6 +5,7 @@ class AppColors {
 
   static const seed = Color(0xFFEE6C4D);
   static const scaffold = Color(0xFFF6F1E8);
+  static const splashBackground = Color(0xFF3A7080);
   static const canvasBackdrop = Color(0xFFE2DED3);
   static const canvasShadow = Color(0x33000000);
   static const toolbar = Color(0xFF1F2937);

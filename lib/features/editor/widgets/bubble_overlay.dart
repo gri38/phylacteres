@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
@@ -34,6 +35,8 @@ class BubbleOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final template = BubbleTemplate.fromAssetPath(bubble.assetPath);
+    final stretchSpec = template?.stretchSpec;
     final width = bubble.widthFactor * displaySize.width;
     final height = bubble.heightFactor * displaySize.height;
     final left = bubble.center.dx * displaySize.width - width / 2;
@@ -78,15 +81,24 @@ class BubbleOverlay extends StatelessWidget {
                           ]
                         : null,
                   ),
-                  child: Transform(
-                    alignment: Alignment.center,
-                    transform: Matrix4.diagonal3Values(
-                      BubbleRenderer.shouldFlipHorizontally(bubble) ? -1 : 1,
-                      BubbleRenderer.shouldFlipVertically(bubble) ? -1 : 1,
-                      1,
-                    ),
-                    child: Image.asset(bubble.assetPath, fit: BoxFit.fill),
-                  ),
+                  child: stretchSpec == null
+                      ? Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.diagonal3Values(
+                            BubbleRenderer.shouldFlipHorizontally(bubble)
+                                ? -1
+                                : 1,
+                            BubbleRenderer.shouldFlipVertically(bubble)
+                                ? -1
+                                : 1,
+                            1,
+                          ),
+                          child: Image.asset(
+                            bubble.assetPath,
+                            fit: BoxFit.fill,
+                          ),
+                        )
+                      : _StretchBubbleAsset(bubble: bubble),
                 ),
               ),
               Padding(
@@ -194,5 +206,54 @@ class BubbleOverlay extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _StretchBubbleAsset extends StatelessWidget {
+  const _StretchBubbleAsset({required this.bubble});
+
+  final SpeechBubbleData bubble;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<ui.Image>(
+      future: BubbleRenderer.loadAssetImage(bubble.assetPath),
+      builder: (context, snapshot) {
+        final image = snapshot.data;
+        if (image == null) {
+          return Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.diagonal3Values(
+              BubbleRenderer.shouldFlipHorizontally(bubble) ? -1 : 1,
+              BubbleRenderer.shouldFlipVertically(bubble) ? -1 : 1,
+              1,
+            ),
+            child: Image.asset(bubble.assetPath, fit: BoxFit.fill),
+          );
+        }
+
+        return CustomPaint(
+          painter: _StretchBubblePainter(bubble: bubble, image: image),
+          child: const SizedBox.expand(),
+        );
+      },
+    );
+  }
+}
+
+class _StretchBubblePainter extends CustomPainter {
+  const _StretchBubblePainter({required this.bubble, required this.image});
+
+  final SpeechBubbleData bubble;
+  final ui.Image image;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    BubbleRenderer.paintLoadedBubbleAsset(canvas, size, bubble, image);
+  }
+
+  @override
+  bool shouldRepaint(covariant _StretchBubblePainter oldDelegate) {
+    return oldDelegate.image != image || oldDelegate.bubble != bubble;
   }
 }

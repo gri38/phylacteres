@@ -12,14 +12,11 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileOutputStream
+import java.text.Normalizer
+import java.util.Locale
 
 class MainActivity : FlutterActivity() {
     private val preferredOutputFolderName = "Phylactères"
-    private val outputFolderCandidates = listOf(
-        "Phylactere",
-        "Phylacteres",
-        preferredOutputFolderName
-    )
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -193,66 +190,66 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun resolveOutputFolderName(): String {
-        val picturesDir = Environment.getExternalStoragePublicDirectory(
-            Environment.DIRECTORY_PICTURES
-        )
-
-        var bestExistingFolderName: String? = null
-        var bestExistingFolderScore = -1
-        for (folderName in outputFolderCandidates) {
-            val directory = File(picturesDir, folderName)
-            if (!directory.exists() || !directory.isDirectory) {
-                continue
-            }
-            val score = safeEntryCount(directory)
-            if (score > bestExistingFolderScore) {
-                bestExistingFolderName = folderName
-                bestExistingFolderScore = score
-            }
-        }
-        if (bestExistingFolderName != null) {
-            return bestExistingFolderName
-        }
-
+        resolveExistingOutputFolderNameFromFileSystem()?.let { return it }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            var bestMediaStoreFolderName: String? = null
-            var bestMediaStoreFolderScore = -1
-            for (folderName in outputFolderCandidates) {
-                val relativePath = "${Environment.DIRECTORY_PICTURES}/$folderName/"
-                val score = mediaStoreEntryCount(relativePath)
-                if (score > bestMediaStoreFolderScore) {
-                    bestMediaStoreFolderName = folderName
-                    bestMediaStoreFolderScore = score
-                }
-            }
-            if (bestMediaStoreFolderName != null && bestMediaStoreFolderScore > 0) {
-                return bestMediaStoreFolderName
-            }
+            resolveExistingOutputFolderNameFromMediaStore()?.let { return it }
         }
-
         return preferredOutputFolderName
     }
 
-    private fun safeEntryCount(directory: File): Int {
-        return try {
-            directory.list()?.size ?: 0
-        } catch (_: SecurityException) {
-            0
-        }
+    private fun resolveExistingOutputFolderNameFromFileSystem(): String? {
+        val picturesDir = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES
+        )
+        val children = picturesDir.listFiles()?.filter { it.isDirectory } ?: return null
+
+        children.firstOrNull { it.name == preferredOutputFolderName }?.let { return it.name }
+
+        val preferredKey = canonicalFolderKey(preferredOutputFolderName)
+        return children.firstOrNull { canonicalFolderKey(it.name) == preferredKey }?.name
     }
 
-    private fun mediaStoreEntryCount(relativePath: String): Int {
+    private fun resolveExistingOutputFolderNameFromMediaStore(): String? {
         val resolver = applicationContext.contentResolver
+        val picturesPrefix = "${Environment.DIRECTORY_PICTURES}/"
+        val preferredRelativePath = "$picturesPrefix$preferredOutputFolderName/"
+        val preferredKey = canonicalFolderKey(preferredOutputFolderName)
+        var canonicalMatch: String? = null
+
         resolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            arrayOf(MediaStore.Images.Media._ID),
-            "${MediaStore.Images.Media.RELATIVE_PATH} = ?",
-            arrayOf(relativePath),
+            arrayOf(MediaStore.Images.Media.RELATIVE_PATH),
+            "${MediaStore.Images.Media.RELATIVE_PATH} LIKE ?",
+            arrayOf("$picturesPrefix%"),
             null
         )?.use { cursor ->
-            return cursor.count
+            val relativePathIndex = cursor.getColumnIndex(MediaStore.Images.Media.RELATIVE_PATH)
+            while (cursor.moveToNext()) {
+                val relativePath = cursor.getString(relativePathIndex) ?: continue
+                if (relativePath == preferredRelativePath) {
+                    return preferredOutputFolderName
+                }
+                if (!relativePath.startsWith(picturesPrefix)) {
+                    continue
+                }
+
+                val folderName = relativePath
+                    .removePrefix(picturesPrefix)
+                    .trimEnd('/')
+                if (canonicalFolderKey(folderName) == preferredKey) {
+                    canonicalMatch = folderName
+                    break
+                }
+            }
         }
-        return 0
+
+        return canonicalMatch
+    }
+
+    private fun canonicalFolderKey(name: String): String {
+        return Normalizer
+            .normalize(name, Normalizer.Form.NFC)
+            .lowercase(Locale.ROOT)
     }
 
     private fun nextAvailableSiblingFile(

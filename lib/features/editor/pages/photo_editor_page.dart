@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -206,11 +207,15 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         if (bubble.id != selectedBubble.id) {
           return bubble;
         }
-        return bubble.copyWith(
+        var updatedBubble = bubble.copyWith(
           shape: template.shape,
           tailStyle: template.tailStyle,
           assetPath: template.assetPath,
         );
+        if (template.defaultFont != null) {
+          updatedBubble = updatedBubble.applyFontStyle(template.defaultFont!);
+        }
+        return _autoSizeBubbleToText(updatedBubble);
       }).toList();
     });
   }
@@ -293,7 +298,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
           if (bubble.id != editingBubbleId) {
             return bubble;
           }
-          return bubble.copyWith(text: _bubbleTextController.text);
+          return _autoSizeBubbleToText(
+            bubble.copyWith(text: _bubbleTextController.text),
+          );
         }).toList();
       } else if (editingTextItemId != null) {
         _textItems = _textItems.map((textItem) {
@@ -551,7 +558,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
   void _applyFontChange(BubbleFontOption font) {
     final selection = _selectionForStyleUpdate();
     if (_selectedBubble != null) {
-      _updateSelectedBubble(
+      _updateSelectedBubbleTextLayout(
         (bubble) => bubble.applyFontStyle(font, selection: selection),
       );
     } else if (_selectedTextItem != null) {
@@ -585,7 +592,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
   void _applyBoldChange(bool isBold) {
     if (_selectedBubble != null) {
-      _updateSelectedBubble((bubble) => bubble.applyBoldStyle(isBold));
+      _updateSelectedBubbleTextLayout(
+        (bubble) => bubble.applyBoldStyle(isBold),
+      );
     } else if (_selectedTextItem != null) {
       _updateSelectedTextItem((textItem) => textItem.applyBoldStyle(isBold));
     }
@@ -593,7 +602,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
   void _applyItalicChange(bool isItalic) {
     if (_selectedBubble != null) {
-      _updateSelectedBubble((bubble) => bubble.applyItalicStyle(isItalic));
+      _updateSelectedBubbleTextLayout(
+        (bubble) => bubble.applyItalicStyle(isItalic),
+      );
     } else if (_selectedTextItem != null) {
       _updateSelectedTextItem(
         (textItem) => textItem.applyItalicStyle(isItalic),
@@ -603,7 +614,9 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
   void _applyTextAlignChange(TextAlign alignment) {
     if (_selectedBubble != null) {
-      _updateSelectedBubble((bubble) => bubble.copyWith(textAlign: alignment));
+      _updateSelectedBubbleTextLayout(
+        (bubble) => bubble.copyWith(textAlign: alignment),
+      );
     } else if (_selectedTextItem != null) {
       _updateSelectedTextItem(
         (textItem) => textItem.copyWith(textAlign: alignment),
@@ -872,6 +885,109 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     });
   }
 
+  void _updateSelectedBubbleTextLayout(
+    SpeechBubbleData Function(SpeechBubbleData bubble) update,
+  ) {
+    final bubbleId = _selectedBubbleId;
+    if (bubbleId == null) {
+      return;
+    }
+
+    setState(() {
+      _bubbles = _bubbles.map((bubble) {
+        if (bubble.id != bubbleId) {
+          return bubble;
+        }
+        return _autoSizeBubbleToText(update(bubble));
+      }).toList();
+    });
+  }
+
+  SpeechBubbleData _autoSizeBubbleToText(SpeechBubbleData bubble) {
+    final imageSize = _imageSize;
+    final stretchSpec = BubbleTemplate.fromAssetPath(
+      bubble.assetPath,
+    )?.stretchSpec;
+    if (imageSize == null ||
+        stretchSpec == null ||
+        !stretchSpec.autoSizeToText) {
+      return bubble;
+    }
+
+    var candidateSize = Size(
+      bubble.widthFactor * imageSize.width,
+      bubble.heightFactor * imageSize.height,
+    );
+    final fixedWidth = candidateSize.width;
+    final widthScale = fixedWidth / stretchSpec.sourceSize.width;
+    final minHeight = stretchSpec.sourceSize.height * widthScale;
+    final maxHeight = imageSize.height * stretchSpec.maxHeightFactor;
+    final heightFloor = math.min(minHeight, maxHeight);
+    final measuredText = bubble.text.trim().isEmpty ? ' ' : bubble.text;
+
+    for (var pass = 0; pass < 4; pass++) {
+      final padding = BubbleRenderer.contentPadding(bubble, candidateSize);
+      final textWidth = math.max(1.0, fixedWidth - padding.horizontal);
+      final widthAwareSize = Size(fixedWidth, candidateSize.height);
+      final widthAwarePadding = BubbleRenderer.contentPadding(
+        bubble,
+        widthAwareSize,
+      );
+      final heightProbePainter = TextPainter(
+        text: bubble.buildStyledTextSpan(
+          widthAwareSize,
+          overrideText: measuredText,
+        ),
+        textAlign: bubble.textAlign,
+        textDirection: TextDirection.ltr,
+        maxLines: 24,
+      )..layout(maxWidth: math.max(1.0, textWidth));
+
+      final probeTextStyle = bubble.textStyleFor(widthAwareSize);
+      final singleLineHeight =
+          (probeTextStyle.fontSize ?? 0) * (probeTextStyle.height ?? 1.15);
+      final extraVerticalSafety = (probeTextStyle.fontSize ?? 0) * 0.26;
+      final desiredHeight =
+          (math.max(heightProbePainter.height, singleLineHeight) +
+                  widthAwarePadding.vertical +
+                  extraVerticalSafety)
+              .clamp(heightFloor, maxHeight)
+              .toDouble();
+
+      final nextSize = Size(fixedWidth, desiredHeight);
+      if ((nextSize.height - candidateSize.height).abs() < 0.5) {
+        candidateSize = nextSize;
+        break;
+      }
+      candidateSize = nextSize;
+    }
+
+    final nextWidthFactor = bubble.widthFactor;
+    final nextHeightFactor = (candidateSize.height / imageSize.height)
+        .clamp(0.1, 1.2)
+        .toDouble();
+    final halfWidth = nextWidthFactor / 2;
+    final halfHeight = nextHeightFactor / 2;
+
+    return bubble.copyWith(
+      widthFactor: nextWidthFactor,
+      heightFactor: nextHeightFactor,
+      center: Offset(
+        _clampElementCenterAxis(bubble.center.dx, halfWidth),
+        _clampElementCenterAxis(bubble.center.dy, halfHeight),
+      ),
+    );
+  }
+
+  double _clampElementCenterAxis(double center, double halfExtent) {
+    final minCenter = halfExtent;
+    final maxCenter = 1 - halfExtent;
+    if (minCenter > maxCenter) {
+      return 0.5;
+    }
+    return (center.clamp(minCenter, maxCenter) as num).toDouble();
+  }
+
   void _updateSelectedTextItem(
     TextStickerData Function(TextStickerData textItem) update,
   ) {
@@ -1010,9 +1126,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
                     isItalic: selectedBubble.isItalic,
                     onFontChanged: _applyFontChange,
                     onTextColorChanged: _applyTextColorChange,
-                    onFontScaleChanged: (value) => _updateSelectedBubble(
-                      (bubble) => bubble.copyWith(fontScaleFactor: value),
-                    ),
+                    onFontScaleChanged: (value) =>
+                        _updateSelectedBubbleTextLayout(
+                          (bubble) => bubble.copyWith(fontScaleFactor: value),
+                        ),
                     onTextAlignChanged: _applyTextAlignChange,
                     onBoldChanged: _applyBoldChange,
                     onItalicChanged: _applyItalicChange,
