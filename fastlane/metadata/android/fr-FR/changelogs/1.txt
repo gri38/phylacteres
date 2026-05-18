@@ -1,5 +1,5 @@
-### Added
+Added:
 - Initial release of the project.
 - Allow to add speech bubble and text to a picture
-- Share and/or save to Phylactère picture folder.
+- Share and/or save to Phylactere picture folder.
 - 'Tintin' bubble adapts its height to the text content.
