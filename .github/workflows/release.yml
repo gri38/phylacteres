@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "[0-9]*.[0-9]*.[0-9]*+*"
+      - '[0-9]*.[0-9]*.[0-9]*\+*'
   # GitHub does not start a new push workflow from a tag created with GITHUB_TOKEN.
   workflow_dispatch:
     inputs:

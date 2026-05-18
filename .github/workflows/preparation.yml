@@ -3,7 +3,7 @@ name: Preparation
 on:
   push:
     tags:
-      - "prepare-*.*.*+*"
+      - 'prepare-*.*.*\+*'
 
 permissions:
   actions: write
