@@ -1,0 +1,137 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "[0-9]*.[0-9]*.[0-9]*+*"
+  # GitHub does not start a new push workflow from a tag created with GITHUB_TOKEN.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag in x.y.z+n format
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve release tag
+        id: requested_tag
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            tag="${GITHUB_REF_NAME}"
+          else
+            tag="${{ inputs.tag }}"
+          fi
+
+          if [[ -z "${tag}" ]]; then
+            echo "Release tag input is required." >&2
+            exit 1
+          fi
+
+          echo "release_tag=${tag}" >> "$GITHUB_OUTPUT"
+
+      - name: Check out release tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.requested_tag.outputs.release_tag }}
+
+      - name: Validate release tag and notes file
+        id: release_meta
+        run: |
+          python3 scripts/release_metadata.py parse-release-tag \
+            --tag "${{ steps.requested_tag.outputs.release_tag }}" \
+            --metadata-root fastlane/metadata/android \
+            --require-changelog \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter stable
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Recreate Android release keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        shell: bash
+        run: |
+          missing_secrets=()
+
+          [[ -n "${KEYSTORE_BASE64}" ]] || missing_secrets+=("KEYSTORE_BASE64")
+          [[ -n "${KEYSTORE_PASSWORD}" ]] || missing_secrets+=("KEYSTORE_PASSWORD")
+          [[ -n "${KEY_ALIAS}" ]] || missing_secrets+=("KEY_ALIAS")
+          [[ -n "${KEY_PASSWORD}" ]] || missing_secrets+=("KEY_PASSWORD")
+
+          if (( ${#missing_secrets[@]} > 0 )); then
+            echo "Missing required Android signing secrets: ${missing_secrets[*]}" >&2
+            exit 1
+          fi
+
+          umask 077
+          mkdir -p android/app
+
+          printf '%s' "${KEYSTORE_BASE64}" | base64 --decode > android/app/upload-keystore.jks
+
+          if [[ ! -s android/app/upload-keystore.jks ]]; then
+            echo "Failed to create android/app/upload-keystore.jks from KEYSTORE_BASE64." >&2
+            exit 1
+          fi
+
+          {
+            printf 'storePassword=%s\n' "${KEYSTORE_PASSWORD}"
+            printf 'keyPassword=%s\n' "${KEY_PASSWORD}"
+            printf 'keyAlias=%s\n' "${KEY_ALIAS}"
+            printf 'storeFile=app/upload-keystore.jks\n'
+          } > android/key.properties
+
+          if [[ ! -s android/key.properties ]]; then
+            echo "Failed to create android/key.properties." >&2
+            exit 1
+          fi
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: Publish GitHub Release
+        env:
+          APK_PATH: build/app/outputs/flutter-apk/app-release.apk
+          GH_TOKEN: ${{ github.token }}
+          NOTES_FILE: ${{ steps.release_meta.outputs.changelog_file }}
+          RELEASE_TAG: ${{ steps.release_meta.outputs.release_tag }}
+        shell: bash
+        run: |
+          if [[ ! -f "${APK_PATH}" ]]; then
+            echo "APK asset ${APK_PATH} was not generated." >&2
+            exit 1
+          fi
+
+          if gh release view "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            gh release upload "${RELEASE_TAG}" "${APK_PATH}" --clobber --repo "${GITHUB_REPOSITORY}"
+            gh release edit "${RELEASE_TAG}" --title "${RELEASE_TAG}" --notes-file "${NOTES_FILE}" --repo "${GITHUB_REPOSITORY}"
+          else
+            gh release create "${RELEASE_TAG}" "${APK_PATH}" \
+              --title "${RELEASE_TAG}" \
+              --notes-file "${NOTES_FILE}" \
+              --verify-tag \
+              --repo "${GITHUB_REPOSITORY}"
+          fi

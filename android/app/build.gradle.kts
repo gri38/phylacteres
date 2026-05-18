@@ -1,5 +1,6 @@
 import java.util.Properties
 import java.io.FileInputStream
+import org.gradle.api.GradleException
 
 plugins {
     id("com.android.application")
@@ -13,6 +14,46 @@ val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+val requiredReleaseKeystoreProperties = listOf(
+    "storePassword",
+    "keyPassword",
+    "keyAlias",
+    "storeFile",
+)
+val missingReleaseKeystoreProperties =
+    requiredReleaseKeystoreProperties.filter { key ->
+        keystoreProperties.getProperty(key).isNullOrBlank()
+    }
+val releaseStoreFilePath = keystoreProperties.getProperty("storeFile")?.trim().orEmpty()
+val releaseStoreFile = releaseStoreFilePath.takeIf { it.isNotEmpty() }?.let(rootProject::file)
+val hasReleaseKeystore =
+    keystorePropertiesFile.exists() &&
+        missingReleaseKeystoreProperties.isEmpty() &&
+        releaseStoreFile != null
+val requiresReleaseSigning =
+    gradle.startParameter.taskNames.any { taskName ->
+        taskName.contains("release", ignoreCase = true)
+    }
+
+if (requiresReleaseSigning) {
+    if (!keystorePropertiesFile.exists()) {
+        throw GradleException(
+            "Release signing requires android/key.properties with storePassword, keyPassword, keyAlias, and storeFile.",
+        )
+    }
+
+    if (missingReleaseKeystoreProperties.isNotEmpty()) {
+        throw GradleException(
+            "Release signing requires these properties in android/key.properties: ${missingReleaseKeystoreProperties.joinToString(", ")}.",
+        )
+    }
+
+    if (releaseStoreFile == null || !releaseStoreFile.isFile) {
+        throw GradleException(
+            "Release signing keystore file not found at android/${releaseStoreFilePath.ifEmpty { "app/upload-keystore.jks" }}.",
+        )
+    }
 }
 
 android {
@@ -41,19 +82,21 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = keystoreProperties["storeFile"]?.let { file(it) }
-            storePassword = keystoreProperties["storePassword"] as String
+        if (hasReleaseKeystore) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = releaseStoreFile
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
         }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("release")
+            if (hasReleaseKeystore) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = true
