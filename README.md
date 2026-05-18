@@ -1,18 +1,44 @@
-# phylactere
+# Phylactères
 
-Phylactere your pictures
+Add speech bubbles to your pictures.
 
-# Release on google play
-- Update version on `pubspec.yaml`
-```ps1
+# Release workflow
+
+## 1. Prepare a release
+
+Update `CHANGELOG.md` using the Keep a Changelog format.
+
+Example:
+
+```md
+## 1.2.0
+
+- Added something
+- Fixed something
+```
+
+Then create and push a prepare tag:
+```powershel
+git tag prepare-1.2.0+7
+git push origin prepare-1.2.0+7
+```
+This automatically triggers the GitHub Actions preparation workflow, which will:
+
+- update pubspec.yaml
+- generate Fastlane changelogs
+- create and push branch: `release/1.2.0+7`
+- create and push release tag: `1.2.0+7`
+- build and publish the GitHub Release APK for IzzyOnDroid
+
+## 2. Release on Google Play
+Pull the generated release branch.
+```powershel
+git fetch
+git checkout release/1.2.0+7
+```
+Then build the Android App Bundle:
+```powershel
 flutter clean
 flutter build appbundle
 ```
-
-# Release elsewher
-- Update version on `pubspec.yaml`
-```ps1
-flutter clean
-flutter build apk --release
-```
-- then use build/app/outputs/flutter-apk/app-release.apk
+Use the generated file: `build/app/outputs/bundle/release/app-release.aab` and upload it to Google Play Console.
