@@ -3,5 +3,4 @@ Ajoutez des bulles de dialogue à vos photos.
 Choisissez une photo dans votre galerie, ajoutez une bulle, écrivez votre texte, et enregistrez le résultat.
 
 Simple, rapide et privé.
-
 Sans publicité. Sans suivi. Sans données personnelles collectées.
