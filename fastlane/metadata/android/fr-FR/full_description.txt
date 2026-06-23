@@ -2,5 +2,7 @@ Ajoutez des bulles de dialogue à vos photos.
 
 Choisissez une photo dans votre galerie, ajoutez une bulle, écrivez votre texte, et enregistrez le résultat.
 
+Disponible pour l'instant en français, anglais, espagnol et allemand ; l'application suit la langue de votre téléphone, sans réglage de langue dans l'application.
+
 Simple, rapide et privé.
 Sans publicité. Sans suivi. Sans données personnelles collectées.

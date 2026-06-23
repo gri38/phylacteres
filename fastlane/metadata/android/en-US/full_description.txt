@@ -2,5 +2,7 @@ Add speech bubbles to your pictures.
 
 Choose a photo from your gallery, add a bubble, write your text, and save the result.
 
+Available so far in English, French, Spanish, and German; the app follows your phone's language, without an in-app language switch.
+
 Simple, fast, and private.
 No ads. No tracking. No data collection. No data sharing. No data sale.

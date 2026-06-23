@@ -2,5 +2,7 @@ Añade bocadillos a tus fotos.
 
 Elige una foto de tu galería, añade un bocadillo, escribe tu texto y guarda el resultado.
 
+Disponible por ahora en español, inglés, francés y alemán; la aplicación usa el idioma de tu teléfono, sin selector de idioma dentro de la app.
+
 Simple, rápida y privada.
 Sin anuncios. Sin seguimiento. Sin recopilación de datos. Sin compartir datos. Sin venta de datos.
