@@ -49,10 +49,7 @@ jobs:
 
           git add \
             pubspec.yaml \
-            "fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}.txt" \
-            "fastlane/metadata/android/fr-FR/changelogs/${VERSION_CODE}.txt" \
-            "fastlane/metadata/android/es-ES/changelogs/${VERSION_CODE}.txt" \
-            "fastlane/metadata/android/de-DE/changelogs/${VERSION_CODE}.txt"
+            "fastlane/metadata/android/en-US/changelogs/${VERSION_CODE}.txt"
 
           if git diff --cached --quiet; then
             release_commit="$(git rev-parse HEAD)"

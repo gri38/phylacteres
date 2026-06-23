@@ -16,7 +16,6 @@ RELEASE_TAG_PATTERN = re.compile(
     r"^(?P<version_name>\d+\.\d+\.\d+)\+(?P<version_code>[1-9]\d*)$"
 )
 CHANGELOG_HEADING_PATTERN = "^##\\s+(?:\\[{version}\\]|{version})(?:\\s+-.*)?\\s*$"
-LOCALES = ("en-US", "fr-FR", "es-ES", "de-DE")
 MAX_CHANGELOG_BYTES = 500
 
 
@@ -148,16 +147,15 @@ def render_plaintext_changelog(section: str) -> str:
     return text
 
 
-def write_changelog_files(metadata_root: Path, version_code: str, changelog_text: str) -> Path:
-    primary_path: Path | None = None
-    for locale in LOCALES:
-        output_path = metadata_root / locale / "changelogs" / f"{version_code}.txt"
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text(changelog_text, encoding="ascii")
-        if primary_path is None:
-            primary_path = output_path
-    assert primary_path is not None
-    return primary_path
+def changelog_path(metadata_root: Path, version_code: str) -> Path:
+    return metadata_root / "en-US" / "changelogs" / f"{version_code}.txt"
+
+
+def write_changelog_file(metadata_root: Path, version_code: str, changelog_text: str) -> Path:
+    output_path = changelog_path(metadata_root, version_code)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(changelog_text, encoding="ascii")
+    return output_path
 
 
 def append_github_outputs(output_path: Path, outputs: dict[str, str]) -> None:
@@ -173,7 +171,7 @@ def prepare_release(args: argparse.Namespace) -> int:
     update_pubspec_version(args.pubspec, version_name, version_code)
     section = extract_changelog_section(args.changelog, version_name)
     changelog_text = render_plaintext_changelog(section)
-    primary_changelog = write_changelog_files(
+    primary_changelog = write_changelog_file(
         args.metadata_root,
         version_code,
         changelog_text,
@@ -194,7 +192,7 @@ def prepare_release(args: argparse.Namespace) -> int:
 
 def parse_release(args: argparse.Namespace) -> int:
     version_name, version_code = parse_release_tag(args.tag)
-    changelog_file = args.metadata_root / "en-US" / "changelogs" / f"{version_code}.txt"
+    changelog_file = changelog_path(args.metadata_root, version_code)
 
     if args.require_changelog:
         if not changelog_file.is_file():
