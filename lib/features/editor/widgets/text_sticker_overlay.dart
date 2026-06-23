@@ -159,18 +159,22 @@ class TextStickerOverlay extends StatelessWidget {
                                 )
                               : Align(
                                   alignment: Alignment.center,
-                                  child: RichText(
-                                    textAlign: textItem.textAlign,
-                                    text: textItem.buildStyledTextSpan(
-                                      itemSize,
-                                      placeholderText: selected
-                                          ? 'Touchez encore pour ecrire'
-                                          : '',
-                                      placeholderColor:
-                                          textItem.font ==
-                                              BubbleFontOption.outlined
-                                          ? Colors.black.withAlpha(160)
-                                          : textItem.textColor.withAlpha(153),
+                                  child: SizedBox(
+                                    width: double.infinity,
+                                    child: RichText(
+                                      textAlign: textItem.textAlign,
+                                      textWidthBasis: TextWidthBasis.parent,
+                                      text: textItem.buildStyledTextSpan(
+                                        itemSize,
+                                        placeholderText: selected
+                                            ? 'Touchez encore pour ecrire'
+                                            : '',
+                                        placeholderColor:
+                                            textItem.font ==
+                                                BubbleFontOption.outlined
+                                            ? Colors.black.withAlpha(160)
+                                            : textItem.textColor.withAlpha(153),
+                                      ),
                                     ),
                                   ),
                                 ),

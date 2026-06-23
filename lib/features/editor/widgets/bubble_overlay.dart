@@ -183,18 +183,15 @@ class BubbleOverlay extends StatelessWidget {
                       child: SizedBox(
                         width: constraints.maxWidth,
                         height: centeredTextHeight,
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: RichText(
-                            textAlign: bubble.textAlign,
-                            text: bubble.buildStyledTextSpan(
-                              bubbleSize,
-                              placeholderText: selected
-                                  ? 'Touchez encore pour écrire'
-                                  : '',
-                              placeholderColor: bubble.textColor.withAlpha(153),
-                            ),
-                          ),
+                         child: RichText(
+                           textAlign: bubble.textAlign,
+                           text: bubble.buildStyledTextSpan(
+                             bubbleSize,
+                             placeholderText: selected
+                                 ? 'Touchez encore pour écrire'
+                                 : '',
+                             placeholderColor: bubble.textColor.withAlpha(153),
+                           ),
                         ),
                       ),
                     );

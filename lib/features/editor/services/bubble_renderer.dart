@@ -104,23 +104,23 @@ class BubbleRenderer {
       return;
     }
 
-    final padding = contentPadding(bubble, size);
-    final rect = Rect.fromLTWH(
-      padding.left,
-      padding.top,
-      size.width - padding.horizontal,
-      size.height - padding.vertical,
-    );
+    final rect = bubbleTextRect(bubble, size);
 
     final textPainter = TextPainter(
       text: bubble.buildStyledTextSpan(size),
       textAlign: bubble.textAlign,
       textDirection: TextDirection.ltr,
       maxLines: 12,
-    )..layout(maxWidth: rect.width);
+    )..layout(maxWidth: math.max(1.0, rect.width));
 
-    final dy = rect.top + math.max(0, (rect.height - textPainter.height) / 2);
-    textPainter.paint(canvas, Offset(rect.left, dy));
+    textPainter.paint(
+      canvas,
+      resolveAlignedTextOffset(
+        rect: rect,
+        textPainter: textPainter,
+        textAlign: bubble.textAlign,
+      ),
+    );
   }
 
   static void paintTextSticker(
@@ -139,7 +139,7 @@ class BubbleRenderer {
       textAlign: textItem.textAlign,
       textDirection: TextDirection.ltr,
       maxLines: 12,
-    )..layout(maxWidth: textWidth);
+    )..layout(maxWidth: math.max(1.0, textWidth));
     final singleLineHeight =
         (textStyle.fontSize ?? 0) * (textStyle.height ?? 1.15);
     final extraVerticalSafety = (textStyle.fontSize ?? 0) * 0.26;
@@ -178,9 +178,49 @@ class BubbleRenderer {
       backgroundRect.width - innerPadding.horizontal,
       backgroundRect.height - innerPadding.vertical,
     );
-    final dy =
-        textRect.top + math.max(0, (textRect.height - textPainter.height) / 2);
-    textPainter.paint(canvas, Offset(textRect.left, dy));
+    textPainter.paint(
+      canvas,
+      resolveAlignedTextOffset(
+        rect: textRect,
+        textPainter: textPainter,
+        textAlign: textItem.textAlign,
+      ),
+    );
+  }
+
+  static Rect bubbleTextRect(SpeechBubbleData bubble, Size size) {
+    final padding = contentPadding(bubble, size);
+    return Rect.fromLTWH(
+      padding.left,
+      padding.top,
+      math.max(0.0, size.width - padding.horizontal),
+      math.max(0.0, size.height - padding.vertical),
+    );
+  }
+
+  static Offset resolveAlignedTextOffset({
+    required Rect rect,
+    required TextPainter textPainter,
+    required TextAlign textAlign,
+    TextDirection textDirection = TextDirection.ltr,
+  }) {
+    final remainingWidth = math.max(0.0, rect.width - textPainter.width);
+    final resolvedAlign = switch (textAlign) {
+      TextAlign.start => textDirection == TextDirection.rtl
+          ? TextAlign.right
+          : TextAlign.left,
+      TextAlign.end => textDirection == TextDirection.rtl
+          ? TextAlign.left
+          : TextAlign.right,
+      _ => textAlign,
+    };
+    final dx = switch (resolvedAlign) {
+      TextAlign.center => rect.left + (remainingWidth / 2),
+      TextAlign.right => rect.left + remainingWidth,
+      _ => rect.left,
+    };
+    final dy = rect.top + math.max(0.0, (rect.height - textPainter.height) / 2);
+    return Offset(dx, dy);
   }
 
   static EdgeInsets contentPadding(SpeechBubbleData bubble, Size size) {
