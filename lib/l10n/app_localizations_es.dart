@@ -15,12 +15,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loadingPhoto => 'Cargando foto…';
 
   @override
-  String get loadPhotoBeforeAddingBubble =>
-      'Carga una foto antes de añadir un bocadillo.';
+  String get loadPhotoBeforeAddingBubble => 'Carga una foto antes de añadir un bocadillo.';
 
   @override
-  String get loadPhotoBeforeAddingText =>
-      'Carga una foto antes de añadir texto.';
+  String get loadPhotoBeforeAddingText => 'Carga una foto antes de añadir texto.';
 
   @override
   String get applyingCrop => 'Aplicando recorte…';
@@ -145,12 +143,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get outputFolderName => 'Phylactères';
 
   @override
-  String get saveConfirmationError =>
-      'No se pudo confirmar que la imagen se haya guardado.';
+  String get saveConfirmationError => 'No se pudo confirmar que la imagen se haya guardado.';
 
   @override
-  String get androidOnlyShareUnsupported =>
-      'Compartir solo está disponible en Android en esta versión.';
+  String get androidOnlyShareUnsupported => 'Compartir solo está disponible en Android en esta versión.';
 
   @override
   String get pathArgumentRequired => 'La ruta es obligatoria.';
@@ -164,16 +160,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Se requieren los datos de la imagen, el nombre del archivo y el tipo MIME.';
 
   @override
-  String get outputFolderCreateError =>
-      'No se pudo crear la carpeta de salida.';
+  String get outputFolderCreateError => 'No se pudo crear la carpeta de salida.';
 
   @override
-  String get galleryEntryCreateError =>
-      'No se pudo crear la entrada en la galería.';
+  String get galleryEntryCreateError => 'No se pudo crear la entrada en la galería.';
 
   @override
-  String get galleryOutputStreamOpenError =>
-      'No se pudo abrir el flujo de salida de la galería.';
+  String get galleryOutputStreamOpenError => 'No se pudo abrir el flujo de salida de la galería.';
 
   @override
   String get shareImageChooserTitle => 'Compartir imagen';

@@ -15,8 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadingPhoto => 'Loading photo…';
 
   @override
-  String get loadPhotoBeforeAddingBubble =>
-      'Load a photo before adding a speech bubble.';
+  String get loadPhotoBeforeAddingBubble => 'Load a photo before adding a speech bubble.';
 
   @override
   String get loadPhotoBeforeAddingText => 'Load a photo before adding text.';
@@ -144,23 +143,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get outputFolderName => 'Phylactères';
 
   @override
-  String get saveConfirmationError =>
-      'Could not confirm that the image was saved.';
+  String get saveConfirmationError => 'Could not confirm that the image was saved.';
 
   @override
-  String get androidOnlyShareUnsupported =>
-      'Sharing is only available on Android in this version.';
+  String get androidOnlyShareUnsupported => 'Sharing is only available on Android in this version.';
 
   @override
   String get pathArgumentRequired => 'The path is required.';
 
   @override
-  String get saveImageArgumentsRequired =>
-      'Image data, source path, extension, and MIME type are required.';
+  String get saveImageArgumentsRequired => 'Image data, source path, extension, and MIME type are required.';
 
   @override
-  String get shareImageArgumentsRequired =>
-      'Image data, file name, and MIME type are required.';
+  String get shareImageArgumentsRequired => 'Image data, file name, and MIME type are required.';
 
   @override
   String get outputFolderCreateError => 'Could not create the output folder.';
@@ -169,8 +164,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get galleryEntryCreateError => 'Could not create the gallery entry.';
 
   @override
-  String get galleryOutputStreamOpenError =>
-      'Could not open the gallery output stream.';
+  String get galleryOutputStreamOpenError => 'Could not open the gallery output stream.';
 
   @override
   String get shareImageChooserTitle => 'Share image';

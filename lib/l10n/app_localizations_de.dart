@@ -15,19 +15,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get loadingPhoto => 'Foto wird geladen…';
 
   @override
-  String get loadPhotoBeforeAddingBubble =>
-      'Lade ein Foto, bevor du eine Sprechblase hinzufügst.';
+  String get loadPhotoBeforeAddingBubble => 'Lade ein Foto, bevor du eine Sprechblase hinzufügst.';
 
   @override
-  String get loadPhotoBeforeAddingText =>
-      'Lade ein Foto, bevor du Text hinzufügst.';
+  String get loadPhotoBeforeAddingText => 'Lade ein Foto, bevor du Text hinzufügst.';
 
   @override
   String get applyingCrop => 'Zuschnitt wird angewendet…';
 
   @override
-  String get currentImageReadError =>
-      'Das aktuelle Bild konnte nicht gelesen werden.';
+  String get currentImageReadError => 'Das aktuelle Bild konnte nicht gelesen werden.';
 
   @override
   String get noPhotoToSave => 'Kein Foto zum Speichern.';
@@ -146,35 +143,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get outputFolderName => 'Phylactères';
 
   @override
-  String get saveConfirmationError =>
-      'Es konnte nicht bestätigt werden, dass das Bild gespeichert wurde.';
+  String get saveConfirmationError => 'Es konnte nicht bestätigt werden, dass das Bild gespeichert wurde.';
 
   @override
-  String get androidOnlyShareUnsupported =>
-      'Teilen ist in dieser Version nur unter Android verfügbar.';
+  String get androidOnlyShareUnsupported => 'Teilen ist in dieser Version nur unter Android verfügbar.';
 
   @override
   String get pathArgumentRequired => 'Der Pfad ist erforderlich.';
 
   @override
-  String get saveImageArgumentsRequired =>
-      'Bilddaten, Quellpfad, Erweiterung und MIME-Typ sind erforderlich.';
+  String get saveImageArgumentsRequired => 'Bilddaten, Quellpfad, Erweiterung und MIME-Typ sind erforderlich.';
 
   @override
-  String get shareImageArgumentsRequired =>
-      'Bilddaten, Dateiname und MIME-Typ sind erforderlich.';
+  String get shareImageArgumentsRequired => 'Bilddaten, Dateiname und MIME-Typ sind erforderlich.';
 
   @override
-  String get outputFolderCreateError =>
-      'Der Ausgabeordner konnte nicht erstellt werden.';
+  String get outputFolderCreateError => 'Der Ausgabeordner konnte nicht erstellt werden.';
 
   @override
-  String get galleryEntryCreateError =>
-      'Der Galerieeintrag konnte nicht erstellt werden.';
+  String get galleryEntryCreateError => 'Der Galerieeintrag konnte nicht erstellt werden.';
 
   @override
-  String get galleryOutputStreamOpenError =>
-      'Der Ausgabestream der Galerie konnte nicht geöffnet werden.';
+  String get galleryOutputStreamOpenError => 'Der Ausgabestream der Galerie konnte nicht geöffnet werden.';
 
   @override
   String get shareImageChooserTitle => 'Bild teilen';

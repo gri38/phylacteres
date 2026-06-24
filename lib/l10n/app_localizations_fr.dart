@@ -15,12 +15,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loadingPhoto => 'Chargement de la photo…';
 
   @override
-  String get loadPhotoBeforeAddingBubble =>
-      'Chargez une photo avant d’ajouter un phylactère.';
+  String get loadPhotoBeforeAddingBubble => 'Chargez une photo avant d’ajouter un phylactère.';
 
   @override
-  String get loadPhotoBeforeAddingText =>
-      'Chargez une photo avant d’ajouter du texte.';
+  String get loadPhotoBeforeAddingText => 'Chargez une photo avant d’ajouter du texte.';
 
   @override
   String get applyingCrop => 'Application du recadrage…';
@@ -145,12 +143,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get outputFolderName => 'Phylactères';
 
   @override
-  String get saveConfirmationError =>
-      'Impossible de confirmer l’enregistrement de l’image.';
+  String get saveConfirmationError => 'Impossible de confirmer l’enregistrement de l’image.';
 
   @override
-  String get androidOnlyShareUnsupported =>
-      'Le partage est disponible uniquement sur Android dans cette version.';
+  String get androidOnlyShareUnsupported => 'Le partage est disponible uniquement sur Android dans cette version.';
 
   @override
   String get pathArgumentRequired => 'Le chemin est requis.';
@@ -160,20 +156,16 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les données de l’image, le chemin source, l’extension et le type MIME sont requis.';
 
   @override
-  String get shareImageArgumentsRequired =>
-      'Les données de l’image, le nom du fichier et le type MIME sont requis.';
+  String get shareImageArgumentsRequired => 'Les données de l’image, le nom du fichier et le type MIME sont requis.';
 
   @override
-  String get outputFolderCreateError =>
-      'Impossible de créer le dossier de sortie.';
+  String get outputFolderCreateError => 'Impossible de créer le dossier de sortie.';
 
   @override
-  String get galleryEntryCreateError =>
-      'Impossible de créer l’entrée dans la galerie.';
+  String get galleryEntryCreateError => 'Impossible de créer l’entrée dans la galerie.';
 
   @override
-  String get galleryOutputStreamOpenError =>
-      'Impossible d’ouvrir le flux d’écriture de la galerie.';
+  String get galleryOutputStreamOpenError => 'Impossible d’ouvrir le flux d’écriture de la galerie.';
 
   @override
   String get shareImageChooserTitle => 'Partager l’image';
