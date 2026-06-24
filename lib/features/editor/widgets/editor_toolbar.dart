@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_colors.dart';
 
 class EditorToolbar extends StatelessWidget {
@@ -24,6 +25,8 @@ class EditorToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -38,32 +41,32 @@ class EditorToolbar extends StatelessWidget {
           children: [
             _ToolbarItem(
               icon: Icons.photo_library_outlined,
-              label: 'Photo',
+              label: l10n.photo,
               onTap: onPickImage,
             ),
             _ToolbarItem(
               icon: Icons.chat_bubble_outline_rounded,
-              label: 'Phylactère',
+              label: l10n.speechBubble,
               onTap: hasImage ? onAddBubble : null,
             ),
             _ToolbarItem(
               icon: Icons.text_fields_rounded,
-              label: 'Texte',
+              label: l10n.text,
               onTap: hasImage ? onAddText : null,
             ),
             _ToolbarItem(
               icon: Icons.crop,
-              label: 'Crop',
+              label: l10n.crop,
               onTap: hasImage ? onCrop : null,
             ),
             _ToolbarItem(
               icon: Icons.share_outlined,
-              label: 'Partager',
+              label: l10n.share,
               onTap: hasImage ? onShare : null,
             ),
             _ToolbarItem(
               icon: Icons.save_alt_outlined,
-              label: 'Sauver',
+              label: l10n.save,
               onTap: hasImage ? onSave : null,
             ),
           ],

@@ -1,0 +1,68 @@
+{
+  "processing": "Procesando…",
+  "loadingPhoto": "Cargando foto…",
+  "loadPhotoBeforeAddingBubble": "Carga una foto antes de añadir un bocadillo.",
+  "loadPhotoBeforeAddingText": "Carga una foto antes de añadir texto.",
+  "applyingCrop": "Aplicando recorte…",
+  "currentImageReadError": "No se pudo leer la imagen actual.",
+  "noPhotoToSave": "No hay ninguna foto para guardar.",
+  "savingPhoto": "Guardando foto…",
+  "imageSaved": "Imagen guardada.",
+  "imageSavedIn": "Imagen guardada en {savedLocation}.",
+  "@imageSavedIn": {
+    "placeholders": {
+      "savedLocation": {
+        "type": "String"
+      }
+    }
+  },
+  "noPhotoToShare": "No hay ninguna foto para compartir.",
+  "preparingShare": "Preparando para compartir…",
+  "resetPhotoZoom": "Restablecer el zoom de la foto",
+  "crop": "Recortar",
+  "apply": "Aplicar",
+  "loadPhotoToStart": "Carga una foto para empezar.",
+  "editorEmptyInstructions": "Después añade tus bocadillos, muévelos con el dedo, pellizca para cambiar su tamaño y gíralos con dos dedos.",
+  "choosePhoto": "Elegir una foto",
+  "photo": "Foto",
+  "speechBubble": "Bocadillo",
+  "text": "Texto",
+  "share": "Compartir",
+  "save": "Guardar",
+  "tapAgainToWrite": "Toca de nuevo para escribir",
+  "writeHint": "Escribir…",
+  "changeSpeechBubble": "Cambiar bocadillo",
+  "flipHorizontally": "Invertir horizontalmente",
+  "flipVertically": "Invertir verticalmente",
+  "resetRotation": "Restablecer a 0°",
+  "delete": "Eliminar",
+  "font": "Fuente",
+  "textColor": "Color del texto",
+  "bold": "Negrita",
+  "italic": "Cursiva",
+  "alignment": "Alineación",
+  "textBackground": "Fondo del texto",
+  "transparent": "Transparente",
+  "color": "Color",
+  "opacityPercent": "Opacidad {opacity}%",
+  "@opacityPercent": {
+    "placeholders": {
+      "opacity": {
+        "type": "int"
+      }
+    }
+  },
+  "saturation": "Saturación",
+  "transparency": "Transparencia",
+  "cancel": "Cancelar",
+  "outputFolderName": "Phylactères",
+  "saveConfirmationError": "No se pudo confirmar que la imagen se haya guardado.",
+  "androidOnlyShareUnsupported": "Compartir solo está disponible en Android en esta versión.",
+  "pathArgumentRequired": "La ruta es obligatoria.",
+  "saveImageArgumentsRequired": "Se requieren los datos de la imagen, la ruta de origen, la extensión y el tipo MIME.",
+  "shareImageArgumentsRequired": "Se requieren los datos de la imagen, el nombre del archivo y el tipo MIME.",
+  "outputFolderCreateError": "No se pudo crear la carpeta de salida.",
+  "galleryEntryCreateError": "No se pudo crear la entrada en la galería.",
+  "galleryOutputStreamOpenError": "No se pudo abrir el flujo de salida de la galería.",
+  "shareImageChooserTitle": "Compartir imagen"
+}

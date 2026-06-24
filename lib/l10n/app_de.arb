@@ -1,0 +1,68 @@
+{
+  "processing": "Verarbeitung…",
+  "loadingPhoto": "Foto wird geladen…",
+  "loadPhotoBeforeAddingBubble": "Lade ein Foto, bevor du eine Sprechblase hinzufügst.",
+  "loadPhotoBeforeAddingText": "Lade ein Foto, bevor du Text hinzufügst.",
+  "applyingCrop": "Zuschnitt wird angewendet…",
+  "currentImageReadError": "Das aktuelle Bild konnte nicht gelesen werden.",
+  "noPhotoToSave": "Kein Foto zum Speichern.",
+  "savingPhoto": "Foto wird gespeichert…",
+  "imageSaved": "Bild gespeichert.",
+  "imageSavedIn": "Bild gespeichert in {savedLocation}.",
+  "@imageSavedIn": {
+    "placeholders": {
+      "savedLocation": {
+        "type": "String"
+      }
+    }
+  },
+  "noPhotoToShare": "Kein Foto zum Teilen.",
+  "preparingShare": "Teilen wird vorbereitet…",
+  "resetPhotoZoom": "Fotozoom zurücksetzen",
+  "crop": "Zuschneiden",
+  "apply": "Anwenden",
+  "loadPhotoToStart": "Lade ein Foto, um zu beginnen.",
+  "editorEmptyInstructions": "Füge dann deine Sprechblasen hinzu, verschiebe sie mit dem Finger, ziehe sie mit zwei Fingern größer oder kleiner und drehe sie mit zwei Fingern.",
+  "choosePhoto": "Foto auswählen",
+  "photo": "Foto",
+  "speechBubble": "Sprechblase",
+  "text": "Text",
+  "share": "Teilen",
+  "save": "Speichern",
+  "tapAgainToWrite": "Tippe erneut, um zu schreiben",
+  "writeHint": "Schreiben…",
+  "changeSpeechBubble": "Sprechblase ändern",
+  "flipHorizontally": "Horizontal spiegeln",
+  "flipVertically": "Vertikal spiegeln",
+  "resetRotation": "Auf 0° zurücksetzen",
+  "delete": "Löschen",
+  "font": "Schriftart",
+  "textColor": "Textfarbe",
+  "bold": "Fett",
+  "italic": "Kursiv",
+  "alignment": "Ausrichtung",
+  "textBackground": "Texthintergrund",
+  "transparent": "Transparent",
+  "color": "Farbe",
+  "opacityPercent": "Deckkraft {opacity}%",
+  "@opacityPercent": {
+    "placeholders": {
+      "opacity": {
+        "type": "int"
+      }
+    }
+  },
+  "saturation": "Sättigung",
+  "transparency": "Transparenz",
+  "cancel": "Abbrechen",
+  "outputFolderName": "Phylactères",
+  "saveConfirmationError": "Es konnte nicht bestätigt werden, dass das Bild gespeichert wurde.",
+  "androidOnlyShareUnsupported": "Teilen ist in dieser Version nur unter Android verfügbar.",
+  "pathArgumentRequired": "Der Pfad ist erforderlich.",
+  "saveImageArgumentsRequired": "Bilddaten, Quellpfad, Erweiterung und MIME-Typ sind erforderlich.",
+  "shareImageArgumentsRequired": "Bilddaten, Dateiname und MIME-Typ sind erforderlich.",
+  "outputFolderCreateError": "Der Ausgabeordner konnte nicht erstellt werden.",
+  "galleryEntryCreateError": "Der Galerieeintrag konnte nicht erstellt werden.",
+  "galleryOutputStreamOpenError": "Der Ausgabestream der Galerie konnte nicht geöffnet werden.",
+  "shareImageChooserTitle": "Bild teilen"
+}

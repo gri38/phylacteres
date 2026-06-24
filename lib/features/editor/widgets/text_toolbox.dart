@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_colors.dart';
 import '../models/speech_bubble.dart';
 import 'background_color_picker_sheet.dart';
@@ -40,6 +41,8 @@ class TextToolbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       margin: const EdgeInsets.fromLTRB(12, 0, 12, 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -58,7 +61,7 @@ class TextToolbox extends StatelessWidget {
       child: Row(
         children: [
           PopupMenuButton<BubbleFontOption>(
-            tooltip: 'Police',
+            tooltip: l10n.font,
             onSelected: onFontChanged,
             itemBuilder: (context) {
               return BubbleFontOption.values.map((candidate) {
@@ -97,25 +100,25 @@ class TextToolbox extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           _ColorMenuButton(
-            tooltip: 'Couleur du texte',
+            tooltip: l10n.textColor,
             colors: AppColors.textPalette,
             onSelected: onTextColorChanged,
           ),
           const SizedBox(width: 8),
           _ToggleButton(
-            tooltip: 'Gras',
+            tooltip: l10n.bold,
             icon: Icons.format_bold,
             selected: isBold,
             onTap: () => onBoldChanged(!isBold),
           ),
           _ToggleButton(
-            tooltip: 'Italique',
+            tooltip: l10n.italic,
             icon: Icons.format_italic,
             selected: isItalic,
             onTap: () => onItalicChanged(!isItalic),
           ),
           _ToggleButton(
-            tooltip: 'Alignement',
+            tooltip: l10n.alignment,
             icon: _alignIcon(textAlign),
             selected: true,
             onTap: () => onTextAlignChanged(_nextTextAlign(textAlign)),
@@ -174,8 +177,10 @@ class _BackgroundButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Tooltip(
-      message: 'Fond du texte',
+      message: l10n.textBackground,
       child: InkWell(
         onTap: () async {
           final pickedColor = await showModalBottomSheet<Color>(
@@ -229,6 +234,8 @@ class _ColorMenuButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return PopupMenuButton<Color>(
       tooltip: tooltip,
       onSelected: onSelected,
@@ -251,7 +258,7 @@ class _ColorMenuButton extends StatelessWidget {
                       : null,
                 ),
                 const SizedBox(width: 10),
-                Text(color.a == 0 ? 'Transparent' : 'Couleur'),
+                Text(color.a == 0 ? l10n.transparent : l10n.color),
               ],
             ),
           );

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../models/speech_bubble.dart';
 import '../models/text_sticker.dart';
 import 'bubble_text_editing_controller.dart';
@@ -34,6 +35,7 @@ class TextStickerOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final width = textItem.widthFactor * displaySize.width;
     final height = textItem.heightFactor * displaySize.height;
     final left = textItem.center.dx * displaySize.width - width / 2;
@@ -45,8 +47,7 @@ class TextStickerOverlay extends StatelessWidget {
     final textStyle = textItem.textStyleFor(itemSize);
 
     if (isEditingText && textController != null) {
-      textController!.styledSpanBuilder = (text) =>
-          textItem.buildStyledTextSpan(itemSize, overrideText: text);
+      textController!.styledSpanBuilder = (text) => textItem.buildStyledTextSpan(itemSize, overrideText: text);
     }
 
     return Positioned(
@@ -67,34 +68,22 @@ class TextStickerOverlay extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final currentText = textController?.text ?? textItem.text;
-                final measureText = currentText.isEmpty && selected
-                    ? 'Touchez encore pour ecrire'
-                    : currentText;
-                final textMeasurement =
-                    TextPainter(
-                      text: textItem.buildStyledTextSpan(
-                        itemSize,
-                        overrideText: measureText,
-                        placeholderText: measureText,
-                        placeholderColor:
-                            textItem.font == BubbleFontOption.outlined
-                            ? Colors.black.withAlpha(160)
-                            : textItem.textColor.withAlpha(153),
-                      ),
-                      textAlign: textItem.textAlign,
-                      textDirection: TextDirection.ltr,
-                    )..layout(
-                      maxWidth: math.max(
-                        0,
-                        constraints.maxWidth - innerPadding.horizontal,
-                      ),
-                    );
-                final singleLineHeight =
-                    (textStyle.fontSize ?? 0) * (textStyle.height ?? 1.15);
+                final measureText = currentText.isEmpty && selected ? l10n.tapAgainToWrite : currentText;
+                final textMeasurement = TextPainter(
+                  text: textItem.buildStyledTextSpan(
+                    itemSize,
+                    overrideText: measureText,
+                    placeholderText: measureText,
+                    placeholderColor: textItem.font == BubbleFontOption.outlined
+                        ? Colors.black.withAlpha(160)
+                        : textItem.textColor.withAlpha(153),
+                  ),
+                  textAlign: textItem.textAlign,
+                  textDirection: TextDirection.ltr,
+                )..layout(maxWidth: math.max(0, constraints.maxWidth - innerPadding.horizontal));
+                final singleLineHeight = (textStyle.fontSize ?? 0) * (textStyle.height ?? 1.15);
                 final extraVerticalSafety = (textStyle.fontSize ?? 0) * 0.26;
-                final contentHeight =
-                    math.max(textMeasurement.height, singleLineHeight) +
-                    extraVerticalSafety;
+                final contentHeight = math.max(textMeasurement.height, singleLineHeight) + extraVerticalSafety;
                 final boxHeight = contentHeight + innerPadding.vertical;
 
                 return OverflowBox(
@@ -108,10 +97,7 @@ class TextStickerOverlay extends StatelessWidget {
                     height: boxHeight,
                     child: CustomPaint(
                       painter: selected
-                          ? _DashedSelectionPainter(
-                              color: Theme.of(context).colorScheme.primary,
-                              radius: radius,
-                            )
+                          ? _DashedSelectionPainter(color: Theme.of(context).colorScheme.primary, radius: radius)
                           : null,
                       child: DecoratedBox(
                         decoration: BoxDecoration(
@@ -123,7 +109,15 @@ class TextStickerOverlay extends StatelessWidget {
                           child: isEditingText
                               ? TextField(
                                   key: ValueKey(
-                                    '${textItem.id}_${textItem.font.name}_${textItem.textColor.toARGB32()}_${textItem.backgroundColor.toARGB32()}_${textItem.fontScaleFactor}_${textItem.textAlign.name}_${textItem.isBold}_${textItem.isItalic}_${textItem.styleRanges.length}',
+                                    '${textItem.id}_'
+                                    '${textItem.font.name}_'
+                                    '${textItem.textColor.toARGB32()}_'
+                                    '${textItem.backgroundColor.toARGB32()}_'
+                                    '${textItem.fontScaleFactor}_'
+                                    '${textItem.textAlign.name}_'
+                                    '${textItem.isBold}_'
+                                    '${textItem.isItalic}_'
+                                    '${textItem.styleRanges.length}',
                                   ),
                                   controller: textController,
                                   focusNode: textFocusNode,
@@ -131,25 +125,18 @@ class TextStickerOverlay extends StatelessWidget {
                                   maxLines: null,
                                   minLines: null,
                                   keyboardType: TextInputType.multiline,
-                                  cursorColor:
-                                      textItem.font == BubbleFontOption.outlined
+                                  cursorColor: textItem.font == BubbleFontOption.outlined
                                       ? Colors.black
                                       : textItem.textColor,
                                   textAlign: textItem.textAlign,
                                   textAlignVertical: TextAlignVertical.center,
-                                  textCapitalization:
-                                      TextCapitalization.sentences,
+                                  textCapitalization: TextCapitalization.sentences,
                                   style: textStyle,
-                                  strutStyle: StrutStyle.fromTextStyle(
-                                    textStyle,
-                                    forceStrutHeight: true,
-                                  ),
+                                  strutStyle: StrutStyle.fromTextStyle(textStyle, forceStrutHeight: true),
                                   decoration: InputDecoration(
-                                    hintText: 'Ecrire...',
+                                    hintText: l10n.writeHint,
                                     hintStyle: textStyle.copyWith(
-                                      color:
-                                          textItem.font ==
-                                              BubbleFontOption.outlined
+                                      color: textItem.font == BubbleFontOption.outlined
                                           ? Colors.black.withAlpha(140)
                                           : textItem.textColor.withAlpha(125),
                                     ),
@@ -166,12 +153,8 @@ class TextStickerOverlay extends StatelessWidget {
                                       textWidthBasis: TextWidthBasis.parent,
                                       text: textItem.buildStyledTextSpan(
                                         itemSize,
-                                        placeholderText: selected
-                                            ? 'Touchez encore pour ecrire'
-                                            : '',
-                                        placeholderColor:
-                                            textItem.font ==
-                                                BubbleFontOption.outlined
+                                        placeholderText: selected ? l10n.tapAgainToWrite : '',
+                                        placeholderColor: textItem.font == BubbleFontOption.outlined
                                             ? Colors.black.withAlpha(160)
                                             : textItem.textColor.withAlpha(153),
                                       ),
@@ -201,10 +184,7 @@ class _DashedSelectionPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
-    final rrect = RRect.fromRectAndRadius(
-      rect.deflate(1.5),
-      Radius.circular(radius),
-    );
+    final rrect = RRect.fromRectAndRadius(rect.deflate(1.5), Radius.circular(radius));
     final path = Path()..addRRect(rrect);
     final dashPaint = Paint()
       ..style = PaintingStyle.stroke
@@ -216,10 +196,7 @@ class _DashedSelectionPainter extends CustomPainter {
       while (distance < metric.length) {
         const dash = 8.0;
         const gap = 5.0;
-        final segment = metric.extractPath(
-          distance,
-          math.min(distance + dash, metric.length),
-        );
+        final segment = metric.extractPath(distance, math.min(distance + dash, metric.length));
         canvas.drawPath(segment, dashPaint);
         distance += dash + gap;
       }

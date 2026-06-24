@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_colors.dart';
 
 class SelectedTextToolbar extends StatelessWidget {
@@ -18,6 +19,7 @@ class SelectedTextToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     const toolbarWidth = 96.0;
     final toolbarLeft = (anchor.dx - toolbarWidth / 2).clamp(
       8.0,
@@ -47,7 +49,7 @@ class SelectedTextToolbar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _ActionButton(
-              tooltip: 'Remettre a 0°',
+              tooltip: l10n.resetRotation,
               onTap: onResetRotation,
               child: const Text(
                 '0°',
@@ -59,7 +61,7 @@ class SelectedTextToolbar extends StatelessWidget {
               ),
             ),
             _ActionButton(
-              tooltip: 'Supprimer',
+              tooltip: l10n.delete,
               onTap: onDelete,
               child: const Icon(
                 Icons.delete_outline,

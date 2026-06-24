@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../models/speech_bubble.dart';
 import '../services/bubble_renderer.dart';
 import 'bubble_text_editing_controller.dart';
@@ -35,6 +36,7 @@ class BubbleOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final template = BubbleTemplate.fromAssetPath(bubble.assetPath);
     final stretchSpec = template?.stretchSpec;
     final width = bubble.widthFactor * displaySize.width;
@@ -111,7 +113,7 @@ class BubbleOverlay extends StatelessWidget {
                         bubbleSize,
                         overrideText: currentText,
                         placeholderText: selected
-                            ? 'Touchez encore pour écrire'
+                            ? l10n.tapAgainToWrite
                             : '',
                         placeholderColor: bubble.textColor.withAlpha(153),
                       ),
@@ -160,7 +162,7 @@ class BubbleOverlay extends StatelessWidget {
                               forceStrutHeight: true,
                             ),
                             decoration: InputDecoration(
-                              hintText: 'Écrire…',
+                              hintText: l10n.writeHint,
                               hintStyle: bubbleTextStyle.copyWith(
                                 color: bubble.font == BubbleFontOption.outlined
                                     ? Colors.black.withAlpha(140)
@@ -188,7 +190,7 @@ class BubbleOverlay extends StatelessWidget {
                            text: bubble.buildStyledTextSpan(
                              bubbleSize,
                              placeholderText: selected
-                                 ? 'Touchez encore pour écrire'
+                                 ? l10n.tapAgainToWrite
                                  : '',
                              placeholderColor: bubble.textColor.withAlpha(153),
                            ),

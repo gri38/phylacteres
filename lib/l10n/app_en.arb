@@ -1,0 +1,68 @@
+{
+  "processing": "Processing…",
+  "loadingPhoto": "Loading photo…",
+  "loadPhotoBeforeAddingBubble": "Load a photo before adding a speech bubble.",
+  "loadPhotoBeforeAddingText": "Load a photo before adding text.",
+  "applyingCrop": "Applying crop…",
+  "currentImageReadError": "Could not read the current image.",
+  "noPhotoToSave": "No photo to save.",
+  "savingPhoto": "Saving photo…",
+  "imageSaved": "Image saved.",
+  "imageSavedIn": "Image saved in {savedLocation}.",
+  "@imageSavedIn": {
+    "placeholders": {
+      "savedLocation": {
+        "type": "String"
+      }
+    }
+  },
+  "noPhotoToShare": "No photo to share.",
+  "preparingShare": "Preparing share…",
+  "resetPhotoZoom": "Reset photo zoom",
+  "crop": "Crop",
+  "apply": "Apply",
+  "loadPhotoToStart": "Load a photo to start.",
+  "editorEmptyInstructions": "Then add your bubbles, move them with your finger, pinch to resize them, and rotate them with two fingers.",
+  "choosePhoto": "Choose a photo",
+  "photo": "Photo",
+  "speechBubble": "Speech bubble",
+  "text": "Text",
+  "share": "Share",
+  "save": "Save",
+  "tapAgainToWrite": "Tap again to write",
+  "writeHint": "Write…",
+  "changeSpeechBubble": "Change speech bubble",
+  "flipHorizontally": "Flip horizontally",
+  "flipVertically": "Flip vertically",
+  "resetRotation": "Reset to 0°",
+  "delete": "Delete",
+  "font": "Font",
+  "textColor": "Text color",
+  "bold": "Bold",
+  "italic": "Italic",
+  "alignment": "Alignment",
+  "textBackground": "Text background",
+  "transparent": "Transparent",
+  "color": "Color",
+  "opacityPercent": "Opacity {opacity}%",
+  "@opacityPercent": {
+    "placeholders": {
+      "opacity": {
+        "type": "int"
+      }
+    }
+  },
+  "saturation": "Saturation",
+  "transparency": "Transparency",
+  "cancel": "Cancel",
+  "outputFolderName": "Phylactères",
+  "saveConfirmationError": "Could not confirm that the image was saved.",
+  "androidOnlyShareUnsupported": "Sharing is only available on Android in this version.",
+  "pathArgumentRequired": "The path is required.",
+  "saveImageArgumentsRequired": "Image data, source path, extension, and MIME type are required.",
+  "shareImageArgumentsRequired": "Image data, file name, and MIME type are required.",
+  "outputFolderCreateError": "Could not create the output folder.",
+  "galleryEntryCreateError": "Could not create the gallery entry.",
+  "galleryOutputStreamOpenError": "Could not open the gallery output stream.",
+  "shareImageChooserTitle": "Share image"
+}

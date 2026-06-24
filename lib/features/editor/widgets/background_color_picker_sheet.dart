@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-
-import '../../../theme/app_colors.dart';
+import 'package:phylactere/l10n/app_localizations.dart';
+import 'package:phylactere/theme/app_colors.dart';
 
 class BackgroundColorPickerSheet extends StatefulWidget {
   const BackgroundColorPickerSheet({super.key, required this.initialColor});
@@ -10,18 +10,15 @@ class BackgroundColorPickerSheet extends StatefulWidget {
   final Color initialColor;
 
   @override
-  State<BackgroundColorPickerSheet> createState() =>
-      _BackgroundColorPickerSheetState();
+  State<BackgroundColorPickerSheet> createState() => _BackgroundColorPickerSheetState();
 }
 
-class _BackgroundColorPickerSheetState
-    extends State<BackgroundColorPickerSheet> {
+class _BackgroundColorPickerSheetState extends State<BackgroundColorPickerSheet> {
   late double _hue;
   late double _saturation;
   late double _alpha;
 
-  Color get _currentColor =>
-      HSVColor.fromAHSV(_alpha, _hue, _saturation, 1).toColor();
+  Color get _currentColor => HSVColor.fromAHSV(_alpha, _hue, _saturation, 1).toColor();
 
   @override
   void initState() {
@@ -36,6 +33,7 @@ class _BackgroundColorPickerSheetState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final selectedColor = _currentColor;
 
     return SafeArea(
@@ -61,10 +59,7 @@ class _BackgroundColorPickerSheetState
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      'Fond du texte',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text(l10n.textBackground, style: Theme.of(context).textTheme.titleMedium),
                     const SizedBox(height: 14),
                     Row(
                       children: [
@@ -72,9 +67,7 @@ class _BackgroundColorPickerSheetState
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            _alpha == 0
-                                ? 'Transparent'
-                                : 'Opacite ${(selectedColor.a * 100).round()}%',
+                            _alpha == 0 ? l10n.transparent : l10n.opacityPercent((selectedColor.a * 100).round()),
                           ),
                         ),
                       ],
@@ -94,9 +87,7 @@ class _BackgroundColorPickerSheetState
                               );
                         final isSelected =
                             (color.a == 0 && _alpha == 0) ||
-                            (color.a != 0 &&
-                                _alpha != 0 &&
-                                _sameRgb(displayColor, selectedColor));
+                            (color.a != 0 && _alpha != 0 && _sameRgb(displayColor, selectedColor));
                         return _PaletteButton(
                           color: color.a == 0 ? color : displayColor,
                           selected: isSelected,
@@ -133,10 +124,7 @@ class _BackgroundColorPickerSheetState
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      'Saturation',
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
+                    Text(l10n.saturation, style: Theme.of(context).textTheme.labelLarge),
                     Slider(
                       min: 0,
                       max: 1,
@@ -150,10 +138,7 @@ class _BackgroundColorPickerSheetState
                         });
                       },
                     ),
-                    Text(
-                      'Transparence',
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
+                    Text(l10n.transparency, style: Theme.of(context).textTheme.labelLarge),
                     Slider(
                       min: 0,
                       max: 1,
@@ -168,15 +153,11 @@ class _BackgroundColorPickerSheetState
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('Annuler'),
-                        ),
+                        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
                         const SizedBox(width: 8),
                         FilledButton(
-                          onPressed: () =>
-                              Navigator.of(context).pop(selectedColor),
-                          child: const Text('Appliquer'),
+                          onPressed: () => Navigator.of(context).pop(selectedColor),
+                          child: Text(l10n.apply),
                         ),
                       ],
                     ),
@@ -218,11 +199,7 @@ class _ColorPreview extends StatelessWidget {
 }
 
 class _PaletteButton extends StatelessWidget {
-  const _PaletteButton({
-    required this.color,
-    required this.selected,
-    required this.onTap,
-  });
+  const _PaletteButton({required this.color, required this.selected, required this.onTap});
 
   final Color color;
   final bool selected;
@@ -240,9 +217,7 @@ class _PaletteButton extends StatelessWidget {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(
-            color: selected
-                ? Theme.of(context).colorScheme.primary
-                : const Color(0x18000000),
+            color: selected ? Theme.of(context).colorScheme.primary : const Color(0x18000000),
             width: selected ? 2 : 1,
           ),
         ),
@@ -261,11 +236,7 @@ class _PaletteButton extends StatelessWidget {
 }
 
 class _HueWheel extends StatelessWidget {
-  const _HueWheel({
-    required this.hue,
-    required this.color,
-    required this.onChanged,
-  });
+  const _HueWheel({required this.hue, required this.color, required this.onChanged});
 
   final double hue;
   final Color color;
@@ -326,20 +297,14 @@ class _HueWheelPainter extends CustomPainter {
 
     final innerRadius = radius - strokeWidth - 8;
     final previewRect = Rect.fromCircle(center: center, radius: innerRadius);
-    final previewRRect = RRect.fromRectAndRadius(
-      previewRect,
-      Radius.circular(innerRadius),
-    );
+    final previewRRect = RRect.fromRectAndRadius(previewRect, Radius.circular(innerRadius));
     final previewPaint = Paint()..color = Colors.white;
     canvas.drawRRect(previewRRect, previewPaint);
     canvas.save();
     canvas.clipRRect(previewRRect);
     canvas.translate(previewRect.left, previewRect.top);
     _CheckerPainter().paint(canvas, previewRect.size);
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, previewRect.width, previewRect.height),
-      Paint()..color = color,
-    );
+    canvas.drawRect(Rect.fromLTWH(0, 0, previewRect.width, previewRect.height), Paint()..color = color);
     canvas.restore();
     canvas.drawRRect(
       previewRRect,
@@ -380,10 +345,7 @@ class _CheckerPainter extends CustomPainter {
     for (var row = 0.0; row < size.height; row += square) {
       for (var col = 0.0; col < size.width; col += square) {
         final isDark = ((row / square).floor() + (col / square).floor()).isOdd;
-        canvas.drawRect(
-          Rect.fromLTWH(col, row, square, square),
-          isDark ? darkPaint : lightPaint,
-        );
+        canvas.drawRect(Rect.fromLTWH(col, row, square, square), isDark ? darkPaint : lightPaint);
       }
     }
   }

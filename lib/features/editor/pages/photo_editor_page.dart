@@ -6,6 +6,7 @@ import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_colors.dart';
 import '../models/speech_bubble.dart';
 import '../models/text_sticker.dart';
@@ -52,7 +53,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
   String? _editingBubbleId;
   String? _editingTextItemId;
   bool _isBusy = false;
-  String _busyLabel = 'Traitement…';
+  String _busyLabel = '';
   int _bubbleSeed = 0;
   int _textItemSeed = 0;
   _EditorGestureSession? _activeGesture;
@@ -116,7 +117,8 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       return;
     }
 
-    await _runBusy('Chargement de la photo…', () async {
+    final l10n = AppLocalizations.of(context)!;
+    await _runBusy(l10n.loadingPhoto, () async {
       _stopEditingText();
       final extension = _imageCodecService.normalizedExtension(
         p.extension(picked.path),
@@ -146,7 +148,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
   Future<void> _openBubblePicker() async {
     if (!_hasImage) {
-      _showMessage('Chargez une photo avant d’ajouter un phylactère.');
+      _showMessage(AppLocalizations.of(context)!.loadPhotoBeforeAddingBubble);
       return;
     }
 
@@ -168,7 +170,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
   void _addTextItem() {
     if (!_hasImage) {
-      _showMessage('Chargez une photo avant d’ajouter du texte.');
+      _showMessage(AppLocalizations.of(context)!.loadPhotoBeforeAddingText);
       return;
     }
 
@@ -362,10 +364,10 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       return;
     }
 
-    await _runBusy('Application du crop…', () async {
+    await _runBusy(AppLocalizations.of(context)!.applyingCrop, () async {
       final decoded = img.decodeImage(_workingImageBytes!);
       if (decoded == null) {
-        throw StateError('Impossible de lire l’image courante.');
+        throw StateError(AppLocalizations.of(context)!.currentImageReadError);
       }
 
       final cropRect = Rect.fromLTWH(
@@ -497,7 +499,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
   Future<void> _saveRenderedImage() async {
     if (!_hasImage || _sourceImagePath == null) {
-      _showMessage('Aucune photo à enregistrer.');
+      _showMessage(AppLocalizations.of(context)!.noPhotoToSave);
       return;
     }
 
@@ -506,7 +508,8 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
     final outputExtension = _sourceExtension == '.png' ? '.png' : '.jpg';
     String? savedLocation;
 
-    final saved = await _runBusy('Enregistrement de la photo…', () async {
+    final l10n = AppLocalizations.of(context)!;
+    final saved = await _runBusy(l10n.savingPhoto, () async {
       final bytes = await _renderCurrentImage(outputExtension);
       savedLocation = await _photoPersistenceService.saveBytes(
         bytes: bytes,
@@ -521,21 +524,21 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
 
     _showMessage(
       savedLocation == null
-          ? 'Image enregistrée.'
-          : 'Image enregistrée dans $savedLocation.',
+          ? l10n.imageSaved
+          : l10n.imageSavedIn(savedLocation!),
     );
   }
 
   Future<void> _shareRenderedImage() async {
     if (!_hasImage || _sourceImagePath == null) {
-      _showMessage('Aucune photo à partager.');
+      _showMessage(AppLocalizations.of(context)!.noPhotoToShare);
       return;
     }
 
     _stopEditingText();
 
     final outputExtension = _sourceExtension == '.png' ? '.png' : '.jpg';
-    await _runBusy('Préparation du partage…', () async {
+    await _runBusy(AppLocalizations.of(context)!.preparingShare, () async {
       final bytes = await _renderCurrentImage(outputExtension);
       await _photoPersistenceService.shareBytes(
         bytes: bytes,
@@ -1037,7 +1040,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
       if (mounted) {
         setState(() {
           _isBusy = false;
-          _busyLabel = 'Traitement…';
+          _busyLabel = AppLocalizations.of(context)!.processing;
         });
       }
     }
@@ -1061,7 +1064,7 @@ class _PhotoEditorPageState extends State<PhotoEditorPage> {
         actions: [
           IconButton(
             onPressed: _hasImage ? _resetPhotoZoom : null,
-            tooltip: 'Réinitialiser le zoom photo',
+            tooltip: AppLocalizations.of(context)!.resetPhotoZoom,
             icon: const Icon(Icons.center_focus_strong),
           ),
         ],

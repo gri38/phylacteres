@@ -1,0 +1,68 @@
+{
+  "processing": "Traitement…",
+  "loadingPhoto": "Chargement de la photo…",
+  "loadPhotoBeforeAddingBubble": "Chargez une photo avant d’ajouter un phylactère.",
+  "loadPhotoBeforeAddingText": "Chargez une photo avant d’ajouter du texte.",
+  "applyingCrop": "Application du recadrage…",
+  "currentImageReadError": "Impossible de lire l’image courante.",
+  "noPhotoToSave": "Aucune photo à enregistrer.",
+  "savingPhoto": "Enregistrement de la photo…",
+  "imageSaved": "Image enregistrée.",
+  "imageSavedIn": "Image enregistrée dans {savedLocation}.",
+  "@imageSavedIn": {
+    "placeholders": {
+      "savedLocation": {
+        "type": "String"
+      }
+    }
+  },
+  "noPhotoToShare": "Aucune photo à partager.",
+  "preparingShare": "Préparation du partage…",
+  "resetPhotoZoom": "Réinitialiser le zoom photo",
+  "crop": "Recadrer",
+  "apply": "Appliquer",
+  "loadPhotoToStart": "Chargez une photo pour commencer.",
+  "editorEmptyInstructions": "Ajoutez ensuite vos bulles, déplacez-les au doigt, pincez pour les redimensionner et tournez-les à deux doigts.",
+  "choosePhoto": "Choisir une photo",
+  "photo": "Photo",
+  "speechBubble": "Phylactère",
+  "text": "Texte",
+  "share": "Partager",
+  "save": "Enregistrer",
+  "tapAgainToWrite": "Touchez encore pour écrire",
+  "writeHint": "Écrire…",
+  "changeSpeechBubble": "Changer de phylactère",
+  "flipHorizontally": "Inverser horizontalement",
+  "flipVertically": "Inverser verticalement",
+  "resetRotation": "Remettre à 0°",
+  "delete": "Supprimer",
+  "font": "Police",
+  "textColor": "Couleur du texte",
+  "bold": "Gras",
+  "italic": "Italique",
+  "alignment": "Alignement",
+  "textBackground": "Fond du texte",
+  "transparent": "Transparent",
+  "color": "Couleur",
+  "opacityPercent": "Opacité {opacity}%",
+  "@opacityPercent": {
+    "placeholders": {
+      "opacity": {
+        "type": "int"
+      }
+    }
+  },
+  "saturation": "Saturation",
+  "transparency": "Transparence",
+  "cancel": "Annuler",
+  "outputFolderName": "Phylactères",
+  "saveConfirmationError": "Impossible de confirmer l’enregistrement de l’image.",
+  "androidOnlyShareUnsupported": "Le partage est disponible uniquement sur Android dans cette version.",
+  "pathArgumentRequired": "Le chemin est requis.",
+  "saveImageArgumentsRequired": "Les données de l’image, le chemin source, l’extension et le type MIME sont requis.",
+  "shareImageArgumentsRequired": "Les données de l’image, le nom du fichier et le type MIME sont requis.",
+  "outputFolderCreateError": "Impossible de créer le dossier de sortie.",
+  "galleryEntryCreateError": "Impossible de créer l’entrée dans la galerie.",
+  "galleryOutputStreamOpenError": "Impossible d’ouvrir le flux d’écriture de la galerie.",
+  "shareImageChooserTitle": "Partager l’image"
+}

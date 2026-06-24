@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_colors.dart';
 
 class SelectedBubbleToolbar extends StatelessWidget {
@@ -24,6 +25,7 @@ class SelectedBubbleToolbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     const toolbarWidth = 220.0;
     final toolbarLeft = (anchor.dx - toolbarWidth / 2).clamp(
       8.0,
@@ -54,21 +56,21 @@ class SelectedBubbleToolbar extends StatelessWidget {
           children: [
             _ActionButton(
               icon: Icons.change_circle_outlined,
-              tooltip: 'Changer de phylactère',
+              tooltip: l10n.changeSpeechBubble,
               onTap: onChangeShape,
             ),
             _ActionButton(
               icon: Icons.swap_horiz,
-              tooltip: 'Inverser horizontalement',
+              tooltip: l10n.flipHorizontally,
               onTap: onFlipHorizontal,
             ),
             _ActionButton(
               icon: Icons.swap_vert,
-              tooltip: 'Inverser verticalement',
+              tooltip: l10n.flipVertically,
               onTap: onFlipVertical,
             ),
             _ActionButton(
-              tooltip: 'Remettre a 0°',
+              tooltip: l10n.resetRotation,
               onTap: onResetRotation,
               child: const Text(
                 '0°',
@@ -81,7 +83,7 @@ class SelectedBubbleToolbar extends StatelessWidget {
             ),
             _ActionButton(
               icon: Icons.delete_outline,
-              tooltip: 'Supprimer',
+              tooltip: l10n.delete,
               onTap: onDelete,
             ),
           ],

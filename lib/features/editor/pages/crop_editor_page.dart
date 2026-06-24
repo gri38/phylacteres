@@ -2,6 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
+
 class CropEditorPage extends StatefulWidget {
   const CropEditorPage({
     super.key,
@@ -23,9 +25,11 @@ class _CropEditorPageState extends State<CropEditorPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Crop'),
+        title: Text(l10n.crop),
         actions: [
           TextButton(
             onPressed: () {
@@ -34,7 +38,7 @@ class _CropEditorPageState extends State<CropEditorPage> {
                 Navigator.of(context).pop(rect);
               }
             },
-            child: const Text('Appliquer'),
+            child: Text(l10n.apply),
           ),
         ],
       ),
