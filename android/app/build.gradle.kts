@@ -29,12 +29,29 @@ val releaseStoreFilePath = keystoreProperties.getProperty("storeFile")?.trim().o
 val releaseStoreFile = releaseStoreFilePath.takeIf { it.isNotEmpty() }?.let(rootProject::file)
 val hasReleaseKeystore =
     keystorePropertiesFile.exists() &&
-        missingReleaseKeystoreProperties.isEmpty() &&
-        releaseStoreFile != null
-val requiresReleaseSigning =
+            missingReleaseKeystoreProperties.isEmpty() &&
+            releaseStoreFile != null &&
+            releaseStoreFile.isFile
+
+val forceSigning =
+    providers.environmentVariable("FORCE_SIGNING")
+        .orNull
+        ?.toBooleanStrictOrNull()
+        ?: false
+
+val isReleaseBuild =
     gradle.startParameter.taskNames.any { taskName ->
         taskName.contains("release", ignoreCase = true)
     }
+
+val requiresReleaseSigning = forceSigning && isReleaseBuild
+
+if (requiresReleaseSigning) {
+    println("Release signing: enabled.")
+} else {
+    println("Release signing: disabled.")
+}
+
 
 if (requiresReleaseSigning) {
     if (!keystorePropertiesFile.exists()) {
@@ -45,7 +62,11 @@ if (requiresReleaseSigning) {
 
     if (missingReleaseKeystoreProperties.isNotEmpty()) {
         throw GradleException(
-            "Release signing requires these properties in android/key.properties: ${missingReleaseKeystoreProperties.joinToString(", ")}.",
+            "Release signing requires these properties in android/key.properties: ${
+                missingReleaseKeystoreProperties.joinToString(
+                    ", "
+                )
+            }.",
         )
     }
 
@@ -89,7 +110,7 @@ android {
     }
 
     signingConfigs {
-        if (hasReleaseKeystore) {
+        if (forceSigning && hasReleaseKeystore) {
             create("release") {
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
@@ -101,7 +122,7 @@ android {
 
     buildTypes {
         release {
-            if (hasReleaseKeystore) {
+            if (forceSigning && hasReleaseKeystore) {
                 signingConfig = signingConfigs.getByName("release")
             }
             isDebuggable = false

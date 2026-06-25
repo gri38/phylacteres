@@ -39,6 +39,6 @@ git checkout release/1.2.0+7
 Then build the Android App Bundle:
 ```powershel
 flutter clean
-flutter build appbundle
+$env:FORCE_SIGNING="true"; flutter build appbundle; Remove-Item Env:\FORCE_SIGNING
 ```
 Use the generated file: `build/app/outputs/bundle/release/app-release.aab` and upload it to Google Play Console.

@@ -62,6 +62,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: "3.35.7"
           cache: true
 
       - name: Recreate Android release keystore
@@ -110,6 +111,8 @@ jobs:
         run: flutter pub get
 
       - name: Build release APK
+        env:
+          FORCE_SIGNING: "true"
         run: flutter build apk --release --split-per-abi
 
       - name: Publish GitHub Release
