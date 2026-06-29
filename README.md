@@ -4,5 +4,6 @@
 # Phylactères
 
 Add speech bubbles to your pictures.
+![screenshot](https://apt.izzysoft.de/fdroid/repo/com.guillot.phylactere/en-US/phoneScreenshots/4.jpg)
 
 [<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png" height="80" alt="Get it at IzzyOnDroid">](https://apt.izzysoft.de/packages/com.guillot.phylactere)
