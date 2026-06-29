@@ -1,4 +1,4 @@
-[![IzzyOnDroid](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.guillot.phylactere.app&label=IzzyOnDroid)](https://apt.izzysoft.de/packages/com.guillot.phylactere)
+[![IzzyOnDroid](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.guillot.phylactere&label=IzzyOnDroid)](https://apt.izzysoft.de/packages/com.guillot.phylactere)
 [![RB Status](https://shields.rbtlog.dev/simple/com.guillot.phylactere?style=for-the-badge)](https://shields.rbtlog.dev/com.guillot.phylactere)
 
 # Phylactères
